@@ -1,0 +1,2 @@
+# WebSQLEntityCodeFirst
+內容為大學生選課程,主要使用EntityCodeFirst以及AutoMapper
