@@ -32,6 +32,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.3\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.3\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -43,15 +55,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataModels\ApplicationRoles.cs" />
+    <Compile Include="DataModels\ApplicationUser .cs" />
+    <Compile Include="DataModels\ApplicationUserRoles.cs" />
+    <Compile Include="DataModels\ChooseAClassroom.cs" />
+    <Compile Include="DataModels\ChooseAClassroomLog.cs" />
+    <Compile Include="DataModels\Classroom.cs" />
+    <Compile Include="DataModels\ClassTime.cs" />
     <Compile Include="DataModels\Course.cs" />
+    <Compile Include="DataModels\CourseDescription.cs" />
+    <Compile Include="DataModels\CourseLog.cs" />
+    <Compile Include="DataModels\CourseStatus.cs" />
     <Compile Include="DataModels\Elective.cs" />
+    <Compile Include="DataModels\ElectiveLog.cs" />
+    <Compile Include="DataModels\Employee.cs" />
+    <Compile Include="DataModels\Home.cs" />
+    <Compile Include="DataModels\IUser.cs" />
+    <Compile Include="DataModels\MenuItems.cs" />
+    <Compile Include="DataModels\Permissions.cs" />
+    <Compile Include="DataModels\SectionDepartment.cs" />
     <Compile Include="DataModels\Student.cs" />
+    <Compile Include="DataModels\UserState.cs" />
+    <Compile Include="Enums\CourseSorts.cs" />
     <Compile Include="Enums\Gender.cs" />
+    <Compile Include="Enums\Identity.cs" />
+    <Compile Include="Enums\RequiredElective.cs" />
+    <Compile Include="Enums\Semester.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,0 +1,139 @@
+﻿@{
+    var account = "";
+    if (Session["sIDNo"] == null || string.IsNullOrWhiteSpace(Session["sIDNo"].ToString()))
+    {
+        Response.Redirect("../Home/Index");
+    }
+    else
+    {
+        account = Session["sIDNo"].ToString();
+    }
+
+    //沒使用_ViewStart就要自訂Layout位置
+    //Layout = "~/Views/Shared/_UserInfoLayout.cshtml";
+
+}
+
+<br />
+<div class="form-horizontal" ng-app="app">
+    <div ng-controller="UserInfo as vm">
+        <h4>Basic Information</h4>
+        <hr />
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="Name">Name</label>
+            <div class="col-md-10">
+                <h5>{{vm.name}}</h5>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Gender</label>
+            <div class="col-md-10">
+                <h5>{{vm.gender}}</h5>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">Student ID No</label>
+            <div class="col-md-10">
+                <h5>{{vm.sIDNo}}</h5>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">Class</label>
+            <div class="col-md-10">
+                <h5>{{vm.class}}</h5>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">Department</label>
+            <div class="col-md-10">
+                <h5>{{vm.department}}</h5>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">EnrollmentDate</label>
+            <div class="col-md-10">
+                <h5>{{vm.enrollmentDate}}</h5>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">Email</label>
+            <div class="col-md-10">
+                <input type="text" ng-model="vm.email" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" value="Save" ng-click="vm.save()" class="btn btn-default" />
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    var appModule = angular.module('app', []);
+    appModule.controller('UserInfo', ['$scope', '$http', function ($scope, $http) {
+        var vm = this;
+        vm.emailCopy = vm.email;
+
+        function init() {
+            $http({
+
+                    method: 'POST',
+                    url: "/UserInfo/Index",
+                    data: null,
+                    dataType: 'json',
+
+            }).then(function Callback(response) {
+
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+
+                }
+            });
+        }
+
+        //判斷登入
+        vm.save = function () {
+
+            if (vm.email == null || vm.email == "") {
+                swal('請確認帳號密碼是否有輸入!!!', '', 'error');
+                vm.email = vm.emailCopy;
+            }
+            else {
+                console.log(vm.emailCopy);
+                //$http({
+
+                //    method: 'POST',
+                //    url: "/Home/AccountsUpdateDialog",
+                //    data: { sIDNo: vm.sIDNo, password: vm.password, rememberMe: vm.rememberMe },
+                //    dataType: 'json',
+
+                //}).then(function Callback(response) {
+
+                //    if (response.data.error == false) {
+                //        sweetAlert(response.data.message, '', 'error');
+                //    }
+                //    else {
+
+                //        window.location.href = response.data.url;
+                //        location.reload();
+                //    }
+                //    vm.sIDNo = ''
+                //    vm.password = ''
+                //});
+            }
+
+
+        };
+
+        init();
+
+    }]);
+</script>

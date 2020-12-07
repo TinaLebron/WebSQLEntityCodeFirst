@@ -1,40 +1,40 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Course Registration";
 }
-@*<h3>@ViewBag.Message</h3>
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
-
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-</div>*@
-
 
 <div ng-app="app">
-    <div ng-controller="AppController as vm">
-        <h3>@ViewBag.Message</h3>
-        {{vm.total}}
+    <div ng-controller="Home as vm">
+        @*<h3>@ViewBag.Message</h3>
+        {{vm.total}}*@
+        <div class="col-sm-4">
+
+        </div>
+        <div class="login-box col-sm-2">
+            <div class="form-inline col-md-12" role="form">
+                <div>
+                    <label for="user_login">Student ID</label><br />
+                    <input class="form-control top" ng-model="vm.sIDNo" autofocus="autofocus" autocapitalize="off" autocorrect="off" data-qa-selector="login_field" type="text" id="user_login">
+                </div>
+                <div>
+                    <label for="user_password">Password</label>
+                    <input class="form-control bottom" ng-model="vm.password" id="user_password" type="password">
+                </div>
+                <div>
+                    <label for="rememberMe">
+                        <input type="checkbox" id="rememberMe" ng-model="vm.rememberMe" value="true">
+                        <span>Remember me</span>
+                    </label>
+                </div>
+                <div></div>
+                <div>
+                    <input type="submit" value="Sign in" class="btn btn-success" style="width: 100%;" ng-click="vm.singIn()">
+                </div>
+                <div align="center" style="border-top: outset;">
+                    <a href="javascript:void(0);" ng-click="vm.forgot()">Forgot your password?</a>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -43,13 +43,186 @@
 <script src="~/Scripts/angular-animate.min.js"></script>
 <script src="~/Scripts/angular-sanitize.min.js"></script>
 
-<script>
-
-    var appModule = angular.module('app', []);
-    appModule.controller('AppController', [function () {
-        var vm = this;
-        vm.total = 0;
 
 
-    }]);
+<style>
+    .login-box {
+        box-shadow: 0 0 0 1px #dbdbdb;
+        border-bottom-right-radius: 0.25rem;
+        border-bottom-left-radius: 0.25rem;
+        padding: 15px;
+        width: 320px;
+    }
+
+    .float-right {
+        float: right !important;
+    }
+</style>
+
+<script type="text/javascript">
+    (function () {
+        var appModule = angular.module('app', []);
+        appModule.controller('Home', ['$scope', '$http', 'rememberMeModel', function ($scope, $http, rememberMeModel) {
+            var vm = this;
+            //vm.total = 0;
+            vm.rememberMe = true;
+            vm.rememberMeView = null;
+            
+
+            if (rememberMeModel != null) {
+                vm.rememberMeView = rememberMeModel;
+                vm.sIDNo = vm.rememberMeView.LogonId;
+                vm.password = vm.rememberMeView.PasswordHash;
+            }
+
+            //判斷登入
+            vm.singIn = function () {
+                if (vm.sIDNo == null || vm.sIDNo == "" || vm.password == null || vm.password == "") {
+                    swal('請確認帳號密碼是否有輸入!!!', '', 'error');
+                    vm.sIDNo = ''
+                    vm.password = ''
+                    console.log(vm.rememberMe);
+                }
+                else {
+                    $http({
+
+                        method: 'POST',
+                        url: "/Home/AccountLogin",
+                        data: { sIDNo: vm.sIDNo, password: vm.password, rememberMe: vm.rememberMe },
+                        dataType: 'json',
+
+                    }).then(function Callback(response) {
+
+                        if (response.data.error == false) {
+                            sweetAlert(response.data.message, '', 'error');
+                        }
+                        else {
+
+                            window.location.href = response.data.url;
+                            location.reload();
+                        }
+                        vm.sIDNo = ''
+                        vm.password = ''
+                    });
+                }
+
+
+            };
+
+            vm.forgot = function () {
+
+                swal({
+                    title: '請輸入身份證字號',
+                    input: 'text'
+                }).then(function (IDNo) {
+                    $http({
+
+                        method: 'POST',
+                        url: "/Home/ConfirmIdentity",
+                        data: { iDNo: IDNo },
+                        dataType: 'json',
+
+                    }).then(function Callback(response) {
+
+                        if (response.data.error == false) {
+                            sweetAlert(response.data.message, '', 'error');
+                        }
+                        else {
+                            vm.logonId = ""
+                            vm.logonId = response.data.logonId
+
+                            swal({
+                                title: 'email傳送驗證碼',
+                                text: '驗證碼通過後即可更新密碼,如有問題請洽詢(0x)1111111',
+                                input: 'email',
+                                showCancelButton: true,
+                                confirmButtonText: 'Submit',
+                                showLoaderOnConfirm: true,
+                                preConfirm: function (email) {
+                                    return new Promise(function (resolve, reject) {
+                                        setTimeout(function () {
+                                            resolve();
+
+                                        }, 2000);
+                                    });
+                                },
+                                allowOutsideClick: false
+                            }).then(function (email) {
+
+                                $http({
+
+                                    method: 'POST',
+                                    url: "/Home/SendEmail",
+                                    data: { receiver: email },
+                                    dataType: 'json',
+
+                                }).then(function Callback(response) {
+
+                                    if (response.data.error == false) {
+                                        sweetAlert(response.data.message, '', 'error');
+                                    }
+                                    else {
+
+                                        swal({
+                                            title: '請輸入email驗證碼',
+                                            text: '如有問題請洽詢(0x)1111111',
+                                            input: 'text',
+                                        }).then(
+                                            function (res) {
+                                                if (res != response.data.num) {
+                                                    sweetAlert('驗證碼輸入錯誤,請重新輸入', '', 'error');
+                                                }
+                                                else {
+                                                    swal({
+                                                        title: '請填入新密碼',
+                                                        text: '您的帳號為' + vm.logonId + ',如有問題請洽詢(0x)1111111',
+                                                        input: 'text',
+                                                    }).then(
+                                                        function (resp) {
+                                                            if (resp == null || resp == "") {
+                                                                sweetAlert('密碼為空,請重新輸入', '', 'error');
+                                                            }
+                                                            else {
+                                                                var getUrl = '/Home/GetNewPassword?logonId=' + vm.logonId + '&password=' + resp
+                                                                
+                                                                swal({
+                                                                    type: 'success',
+                                                                    title: '密碼已更新!',
+                                                                    showConfirmButton: false,
+                                                                })
+                                                                window.location = getUrl;
+                                                            }
+
+                                                        }
+                                                    )
+                                                }
+
+                                            })
+                                    }
+                                });
+
+
+                            })
+
+                        }
+                    });
+                })
+
+                
+            }
+
+
+        }]);
+
+    })();
 </script>
+
+@section Scripts{
+    <!--參考: https://dotblogs.com.tw/wasichris/2015/05/09/151234 -->
+    <script>
+        //將model轉換成json
+        var model = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(this.Model));
+        //建立viewModel Value Provider供後續注入前端AngularJS controller中使用
+        angular.module('app').value('rememberMeModel', model);
+    </script>
+}

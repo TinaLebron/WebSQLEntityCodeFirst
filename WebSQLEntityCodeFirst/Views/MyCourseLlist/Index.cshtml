@@ -1,0 +1,37 @@
+﻿@{
+    ViewBag.Title = "MyCourseLlist";
+
+    var account = "";
+    if (Session["sIDNo"] == null || string.IsNullOrWhiteSpace(Session["sIDNo"].ToString()))
+    {
+        Response.Redirect("../Home/Index");
+    }
+    else
+    {
+        account = Session["sIDNo"].ToString();
+    }
+
+    //沒使用_ViewStart就要自訂Layout位置
+    //Layout = "~/Views/Shared/_UserInfoLayout.cshtml";
+
+}
+
+
+<br />
+<div class="form-horizontal" ng-app="app">
+    <div ng-controller="MyCourseLlist as vm">
+        <h4>我的選課清單</h4>
+        <hr />
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    var appModule = angular.module('app', []);
+    appModule.controller('MyCourseLlist', ['$scope', '$http', function ($scope, $http) {
+        var vm = this;
+
+    }]);
+</script>

@@ -12,14 +12,25 @@ namespace WebSQLEntityCodeFirst.Core.DataModels
     {
         [Key]
         public int ID { get; set; }
-        public string Name { get; set; }
-        public Gender Gender { get; set; } //性別
         [Required]
-        public string IDNo { get; set; } //學號
+        public string LogonId { get; set; } // 員工/學號(帳號)
+        public int Annual { get; set; } //入學學年
+        public int Grade { get; set; } //年級
         public string Class { get; set; } //班級
-        public string Department { get; set; } //科系
-        public DateTime EnrollmentDate { get; set; } //入學時間
+        public int CreatedUserId { get; set; } //建立者
+        public DateTime? CreateDate { get; set; } //建立時間
+        public int LastModifiedUserId { get; set; } //最後編輯的使用者
+        public DateTime? LastModifyDate { get; set; } //最後編輯的時間
+        public bool IsActive { get; set; } //不使用
+        public int ApplicationUserId { get; set; }
+        public int SectionDepartmentId { get; set; }
+        public int? UserStateId { get; set; }
 
+
+        public virtual ApplicationUser ApplicationUser { get; set; }
+        public virtual SectionDepartment SectionDepartment { get; set; }//部別系所
+        public virtual UserState UserState { get; set; }
         public virtual IList<Elective> Elective { get; set; }
+        
     }
 }
