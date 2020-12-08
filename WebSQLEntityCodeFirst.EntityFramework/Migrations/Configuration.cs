@@ -15,7 +15,9 @@
 
         protected override void Seed(WebSQLEntityCodeFirst.EntityFramework.EntityFramework.SchoolContext context)
         {
-            new InitialWebSQLEntityCodeFirstDbBuilder(context).Create();
+
+            //防止重複執行
+            if (context.Student.Count() == 0) { new InitialWebSQLEntityCodeFirstDbBuilder(context).Create(); }
         }
     }
 }

@@ -49,6 +49,10 @@
       <HintPath>..\packages\AutoMapper.10.0.0\lib\net461\AutoMapper.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.3\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -130,7 +134,17 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\CourseInQuiryController.cs" />
+    <Compile Include="Controllers\CourseManagementController.cs" />
+    <Compile Include="Controllers\CourseWorkController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MyCourseLlistController.cs" />
+    <Compile Include="Controllers\NewsController.cs" />
+    <Compile Include="Controllers\NewsManagementController.cs" />
+    <Compile Include="Controllers\PasswordSettingController.cs" />
+    <Compile Include="Controllers\SyllabusController.cs" />
+    <Compile Include="Controllers\TutorScheduleController.cs" />
+    <Compile Include="Controllers\UserInfoController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -141,10 +155,12 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\SweetAlert\sweetalert2.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Images\school.PNG" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />
     <Content Include="Scripts\angular-aria.js" />
@@ -936,6 +952,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\sitemap.xml" />
+    <Content Include="Scripts\SweetAlert\sweetalert2.js" />
     <Content Include="Scripts\test-bundles\angular-aria.js" />
     <Content Include="Scripts\test-bundles\angular-cookies.js" />
     <Content Include="Scripts\test-bundles\angular-message-format.js" />
@@ -959,6 +976,29 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Scripts\version.json" />
+    <Content Include="Views\PasswordSetting\Index.cshtml" />
+    <Content Include="Views\Home\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_UserInfoLayout.cshtml" />
+    <Content Include="Views\UserInfo\Index.cshtml" />
+    <Content Include="Views\UserInfo\_ViewStart.cshtml" />
+    <Content Include="Views\UserInfo\SubjectSystem.cshtml" />
+    <Content Include="Views\News\Index.cshtml" />
+    <Content Include="Views\PasswordSetting\_ViewStart.cshtml" />
+    <Content Include="Views\News\_ViewStart.cshtml" />
+    <Content Include="Views\CourseManagement\Index.cshtml" />
+    <Content Include="Views\CourseManagement\_ViewStart.cshtml" />
+    <Content Include="Views\TutorSchedule\_ViewStart.cshtml" />
+    <Content Include="Views\TutorSchedule\Index.cshtml" />
+    <Content Include="Views\Syllabus\_ViewStart.cshtml" />
+    <Content Include="Views\Syllabus\Index.cshtml" />
+    <Content Include="Views\CourseWork\_ViewStart.cshtml" />
+    <Content Include="Views\CourseWork\Index.cshtml" />
+    <Content Include="Views\CourseInQuiry\_ViewStart.cshtml" />
+    <Content Include="Views\CourseInQuiry\Index.cshtml" />
+    <Content Include="Views\MyCourseLlist\_ViewStart.cshtml" />
+    <Content Include="Views\MyCourseLlist\Index.cshtml" />
+    <Content Include="Views\NewsManagement\_ViewStart.cshtml" />
+    <Content Include="Views\NewsManagement\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
