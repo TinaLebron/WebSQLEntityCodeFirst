@@ -1,0 +1,109 @@
+﻿@{
+    var account = "";
+    if (Session["sIDNo"] == null || string.IsNullOrWhiteSpace(Session["sIDNo"].ToString()))
+    {
+        Response.Redirect("../Home/Index");
+    }
+    else
+    {
+        account = Session["sIDNo"].ToString();
+    }
+
+    //沒使用_ViewStart就要自訂Layout位置
+    //Layout = "~/Views/Shared/_UserInfoLayout.cshtml";
+
+}
+
+<br />
+<div class="form-horizontal" ng-app="app">
+    <div ng-controller="PasswordSetting as vm">
+        <h4>密碼設定</h4>
+        <hr />
+
+        <div class="form-group">
+            <label class="control-label col-md-2">新密碼</label>
+            <div class="col-md-10">
+                <input type="text" ng-model="vm.passwordHash" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">確認密碼</label>
+            <div class="col-md-10">
+                <input type="text" ng-model="vm.confirmPassword" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" value="Save" ng-click="vm.save()" class="btn btn-default" />
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    var appModule = angular.module('app', []);
+    appModule.controller('PasswordSetting', ['$scope', '$http', function ($scope, $http) {
+        var vm = this;
+        vm.emailCopy = vm.email;
+
+        function init() {
+            $http({
+
+                method: 'POST',
+                url: "/PasswordSetting/Index",
+                data: null,
+                dataType: 'json',
+
+            }).then(function Callback(response) {
+
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+
+                }
+            });
+        }
+
+        //判斷登入
+        vm.save = function () {
+
+            if (vm.passwordHash == null || vm.passwordHash == "" || vm.confirmPassword == null || vm.confirmPassword == "") {
+                swal('請確認帳號密碼是否有輸入!!!', '', 'error');
+                
+            }
+            else if (vm.passwordHash != vm.confirmPassword) {
+                swal('新密碼跟確認密碼不符,請再重新輸入!!!', '', 'error');
+            }
+            else {
+                $http({
+
+                    method: 'POST',
+                    url: "/PasswordSetting/PasswordUpdate",
+                    data: { password: vm.passwordHash},
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        sweetAlert(response.data.successMessage, '', 'success');
+                    }
+                    vm.passwordHash = ''
+                    vm.confirmPassword = ''
+                });
+            }
+
+
+        };
+
+        init();
+
+    }]);
+</script>

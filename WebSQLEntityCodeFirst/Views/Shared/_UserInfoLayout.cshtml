@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+    <script src="~/Scripts/angular.min.js"></script>
+    <script src="~/Scripts/angular-animate.min.js"></script>
+    <script src="~/Scripts/angular-sanitize.min.js"></script>
+
+</head>
+<body ng-app="app">
+    <!--必須在body寫上ng-app,不然功能將無效--><!---案例:https://stackoverflow.com/questions/24316355/multiple-controllers-with-angularjs-in-single-page-app/44494497#44494497 -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container" ng-controller="UserInfoLayout as vm">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <img src="~/Images/school.png" />
+            </div>
+            <div class="navbar-collapse collapse">
+               
+                <ul class="nav navbar-nav" ng-repeat="navbar in navbars">
+                    <li><a href="javascript:void(0);"  ng-click="vm.navbarUrl(navbar.Url)">{{navbar.Name}}</a></li>
+                </ul>
+                
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="javascript:void(0);" style="width: 100%;text-align:right;" ng-click="vm.logout()">Sign out</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container body-content">
+        @RenderBody()
+    </div>
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+
+
+
+
+<script type="text/javascript">
+
+    //Index (~\Views\UserInfo) => _UserInfoLayout(~\Views\Shared, html指定的Layout位置),必須在Index初始化
+    //var appModule = angular.module('app', []);
+    appModule.controller('UserInfoLayout', ['$scope', '$http', function ($scope, $http) {
+        var vm = this;
+
+        function getNews() {
+            $http({
+
+                method: 'POST',
+                url: "/News/GetNavbar",
+                data: { logonId: "@Session["sIDNo"]" },
+                dataType: 'json',
+
+            }).then(function Callback(response) {
+
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+
+                    $scope.navbars = response.data.navbars
+                }
+            });
+        }
+
+        //判斷登出
+        vm.logout = function () {
+
+            var getUrl = '/News/Logout'
+            window.location = getUrl;
+
+
+        };
+
+        vm.navbarUrl = function (e) {
+
+            var getUrl = e
+            window.location = getUrl;
+
+
+        };
+
+        getNews();
+
+    }]);
+</script>
+
