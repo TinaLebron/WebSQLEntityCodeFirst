@@ -50,11 +50,13 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\NewsServices.cs" />
     <Compile Include="Services\PermissionsServices.cs" />
     <Compile Include="Services\ApplicationUserServices.cs" />
     <Compile Include="ViewModels\ApplicationUserDto.cs" />
     <Compile Include="ViewModels\CourseDto.cs" />
     <Compile Include="ViewModels\ElectiveDto.cs" />
+    <Compile Include="ViewModels\Home.cs" />
     <Compile Include="ViewModels\PermissionsDto.cs" />
     <Compile Include="ViewModels\StudentDto.cs" />
   </ItemGroup>

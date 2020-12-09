@@ -12,6 +12,10 @@ namespace WebSQLEntityCodeFirst.Controllers
         // GET: News
         public ActionResult Index()
         {
+            var homeInfos = NewsServices.GetSubjectAndContents();
+            ViewBag.Subject = homeInfos.Subject;
+            ViewBag.HomeContents = homeInfos.Contents;
+
             return View();
         }
 

@@ -16,12 +16,29 @@
 
 }
 
+<link href="~/Scripts/summernote/summernote.css" rel="stylesheet" />
+<script src="~/Scripts/summernote/summernote.js"></script>
 
 <br />
 <div class="form-horizontal" ng-app="app">
     <div ng-controller="NewsManagement as vm">
         <h4>首頁後台</h4>
         <hr />
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Title</label>
+            <div class="col-md-10">
+                <input type="text" ng-model="vm.homeSubject" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">Content</label>
+            <div class="col-md-10">
+                <div class="homeContents">@Html.Raw(ViewBag.HomeContents)</div>
+            </div>
+        </div>
+
+        <button class="btn btn-danger" ng-click="vm.save()" type="button">更新</button>
 
     </div>
 </div>
@@ -32,6 +49,33 @@
     var appModule = angular.module('app', []);
     appModule.controller('NewsManagement', ['$scope', '$http', function ($scope, $http) {
         var vm = this;
+        vm.homeSubject = "@ViewBag.Subject";
+        $('.homeContents').summernote({ focus: true });
 
+        vm.save = function () {
+            var markup = $('.homeContents').summernote('code');
+
+            $http({
+
+                method: 'POST',
+                url: "/NewsManagement/SaveHomeInfo",
+                data: { subject: vm.homeSubject, contents: markup},
+                dataType: 'json',
+
+            }).then(function Callback(response) {
+
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+                    sweetAlert('已做更新!!!', '', 'success');
+
+                }
+            });
+
+
+        };
+
+        
     }]);
 </script>
