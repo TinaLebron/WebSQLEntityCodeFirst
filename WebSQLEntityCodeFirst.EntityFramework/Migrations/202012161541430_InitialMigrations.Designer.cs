@@ -13,7 +13,7 @@ namespace WebSQLEntityCodeFirst.EntityFramework.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202012071149270_InitialMigrations"; }
+            get { return "202012161541430_InitialMigrations"; }
         }
         
         string IMigrationMetadata.Source

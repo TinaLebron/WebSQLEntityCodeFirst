@@ -155,11 +155,13 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\jquery.dataTables.min.css" />
     <Content Include="Content\SweetAlert\sweetalert2.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Images\file.png" />
     <Content Include="Images\school.PNG" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />
@@ -946,6 +948,7 @@
     <Content Include="Scripts\jquery-3.3.1.slim.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.dataTables.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -1160,6 +1163,7 @@
     <Content Include="Scripts\summernote\summernote-lite.min.js.map" />
     <Content Include="Scripts\summernote\summernote.js.map" />
     <Content Include="Scripts\summernote\summernote.min.js.map" />
+    <Content Include="Views\CourseInQuiry\Syllabus.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

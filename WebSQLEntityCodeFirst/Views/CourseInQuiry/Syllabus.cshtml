@@ -1,0 +1,237 @@
+﻿@{
+    var account = "";
+    if (Session["sIDNo"] == null || string.IsNullOrWhiteSpace(Session["sIDNo"].ToString()))
+    {
+        Response.Redirect("../Home/Index");
+    }
+    else
+    {
+        account = Session["sIDNo"].ToString();
+    }
+
+    //沒使用_ViewStart就要自訂Layout位置
+    //Layout = "~/Views/Shared/_UserInfoLayout.cshtml";
+}
+
+<style>
+    .alph-list__title {
+        font-size: 2.375em;
+        font-weight: 300;
+        position: relative;
+        color: #333;
+        padding: 0 0 0.15789474em;
+    }
+
+    .alph-list__title::before {
+        position: absolute;
+        z-index: 3;
+        bottom: 0;
+        left: 0;
+        width: 1.875rem;
+        height: 3px;
+        content: "";
+        background: #A02337;
+    }
+
+    .alph-list__alph {
+        font-size: 2.63157895em;
+        font-weight: 400;
+        line-height: 1;
+        text-indent: -0.05263158em;
+    }
+
+    .alph-list__title::after {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 2px;
+        content: "";
+        background: #D5D5D5;
+    }
+
+    span.uppercase-label {
+        display: inline-block;
+        min-width: 8em;
+    }
+
+</style>
+
+<br />
+<div class="form-horizontal" ng-app="app">
+    <div ng-controller="Syllabus as vm">
+        <p class="alph-list__title"><span class="alph-list__alph"></span>教師資訊</p>
+        <br />
+        <p>
+            <span class="uppercase-label" style="padding-bottom:10px"><b>授課教師</b></span>@ViewBag.UserName<br>
+            <span class="uppercase-label" style="padding-bottom:10px"><b>電子郵件</b></span>@ViewBag.Email<br>
+            <span class="uppercase-label" style="padding-bottom:10px"><b>辨公室</b></span>@ViewBag.SchoolNumber<br>
+            <span class="uppercase-label" style="padding-bottom:10px"><b>聯絡電話(分機)</b></span>@ViewBag.Tel<br>
+            <span class="uppercase-label" style="padding-bottom:10px"><b>專業領域</b></span>@ViewBag.ResearchAreas<br>
+        </p>
+
+        <p class="alph-list__title"><span class="alph-list__alph"></span>課綱</p>
+        <br />
+        <ul id="myTab" class="nav nav-tabs">
+            <li class="active">
+                <a href="#info" data-toggle="tab">
+                    開課資訊
+                </a>
+            </li>
+            <li><a href="#course" data-toggle="tab">課程大綱</a></li>
+        </ul>
+        <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade in active" id="info">
+                <div class="row">
+                    <div class="col-md-7">
+                        <table class="table table-striped the-table">
+                            <tbody>
+                                <tr>
+                                    <th width="150px">學年學期</th>
+                                    <td>
+                                        <span id="course_name">@ViewBag.YearSemesters</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th width="150px">課程名稱</th>
+                                    <td>
+                                        <span id="course_name">@ViewBag.Subject</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>開課碼</th>
+                                    <td>@ViewBag.SubjectNumber</td>
+                                </tr>
+                                <tr>
+                                    <th>系所 班級</th>
+                                    <td>
+                                        <p>
+                                            <span id="d_edu_system_name">@ViewBag.GradeClass</span>
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>授課教師</th>
+                                    <td>
+                                        <span class="blue" id="teacher_name">@ViewBag.UserName</span>
+                                        <span class="orange" id="other_teacher_name"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>必修/選修</th>
+                                    <td>
+                                        <p><span id="d_course_sm_name">@ViewBag.RequiredElective</span>修</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>學分</th>
+                                    <td><span id="d_credit">@ViewBag.Credits</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-5">
+                        <table class="table table-striped the-table">
+                            <tbody>
+                                <tr>
+                                    <th width="150px">上課時數</th>
+                                    <td>
+                                        <span id="d_instruct_hour">@ViewBag.NumberOfHours</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>實習時數</th>
+                                    <td>
+                                        <span id="d_practice_hour">@ViewBag.HoursInternship</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>上課時間&amp;地點</th>
+                                    <td>
+                                        <p>
+                                            <span id="d_course_arrange_time_info">@ViewBag.TimeLocation</span>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="course">
+                <div class="col-md-12">
+                    <table id="schedule" name="schedule" class="table table-striped the-table">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <h3 class="blue">授課目標</h3>
+                                    <br>
+                                    <p>
+                                        <span id="Objectives">@Html.Raw(ViewBag.Objectives)</span>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h3 class="blue">授課大綱</h3>
+                                    <br>
+                                    <p>
+                                        <span id="Objectives">@Html.Raw(ViewBag.CourseOutline)</span>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h3 class="blue">教科書</h3>
+                                    <br>
+                                    <p>
+                                        <span id="Objectives">@Html.Raw(ViewBag.Textbooks)</span>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h3 class="blue">參考書籍</h3>
+                                    <br>
+                                    <p>
+                                        <span id="Objectives">@Html.Raw(ViewBag.ReferenceBooks)</span>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h3 class="blue">成績考核準則</h3>
+                                    <br>
+                                    <p>
+                                        <span id="Objectives">@Html.Raw(ViewBag.Grading)</span>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h3 class="blue">授課進度</h3>
+                                    <br>
+                                    <p>
+                                        <span id="Objectives">@Html.Raw(ViewBag.Schedule)</span>
+                                    </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var appModule = angular.module('app', []);
+    appModule.controller('Syllabus', ['$scope', '$http', function ($scope, $http) {
+        var vm = this;
+
+
+
+    }]);
+</script>

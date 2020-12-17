@@ -11,6 +11,7 @@ namespace WebSQLEntityCodeFirst.Core.DataModels
     {
         [Key]
         public int ID { get; set; }
+        public int Rank { get; set; } //順位,從1開始,用途:用迴圈取得多數節課
         public string TimePeriod { get; set; } //時段 ex: 日間時間,夜間時間
         public string Time { get; set; } //上課時間
         public int ClassPeriod { get; set; } //節次

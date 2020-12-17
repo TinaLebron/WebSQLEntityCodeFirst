@@ -55,9 +55,11 @@
     <Compile Include="Services\ApplicationUserServices.cs" />
     <Compile Include="ViewModels\ApplicationUserDto.cs" />
     <Compile Include="ViewModels\CourseDto.cs" />
+    <Compile Include="ViewModels\CourseInQuiryInfos.cs" />
     <Compile Include="ViewModels\ElectiveDto.cs" />
     <Compile Include="ViewModels\Home.cs" />
     <Compile Include="ViewModels\PermissionsDto.cs" />
+    <Compile Include="ViewModels\SectionDepartmentList.cs" />
     <Compile Include="ViewModels\StudentDto.cs" />
   </ItemGroup>
   <ItemGroup>

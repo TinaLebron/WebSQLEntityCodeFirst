@@ -199,6 +199,7 @@
                 c => new
                     {
                         ID = c.Int(nullable: false, identity: true),
+                        Rank = c.Int(nullable: false),
                         TimePeriod = c.String(),
                         Time = c.String(),
                         ClassPeriod = c.Int(nullable: false),
@@ -273,6 +274,7 @@
                         ID = c.Int(nullable: false, identity: true),
                         Section = c.String(),
                         Department = c.String(),
+                        DepartmentAbbreviation = c.String(),
                         CourseSorts = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.ID);
