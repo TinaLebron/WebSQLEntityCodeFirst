@@ -1,0 +1,138 @@
+﻿@{
+    ViewBag.Title = "EditCourse";
+
+    var account = "";
+    if (Session["sIDNo"] == null || string.IsNullOrWhiteSpace(Session["sIDNo"].ToString()))
+    {
+        Response.Redirect("../Home/Index");
+    }
+    else
+    {
+        account = Session["sIDNo"].ToString();
+    }
+
+    //沒使用_ViewStart就要自訂Layout位置
+    //Layout = "~/Views/Shared/_UserInfoLayout.cshtml";
+
+    <link rel="stylesheet" href="~/Content/jquery.dataTables.min.css" />
+    <script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/ui-bootstrap/ui-bootstrap-tpls-2.5.0.min.js"></script>
+}
+
+<style>
+    .portlet.box.blue {
+        border: 1px solid #60aee4;
+        border-top: 0;
+    }
+
+        .portlet.blue, .portlet.box.blue > .portlet-title, .portlet > .portlet-body.blue {
+            background-color: #3598dc;
+        }
+
+    .portlet.box {
+        padding: 0 !important;
+    }
+
+    .portlet {
+        margin-top: 0;
+        margin-bottom: 25px;
+        padding: 0;
+        border-radius: 4px;
+    }
+
+        .portlet.box > .portlet-title {
+            border-bottom: 0;
+            padding: 10px;
+            margin-bottom: 0;
+            color: #fff;
+        }
+
+        .portlet.box > .portlet-body {
+            background-color: #fff;
+            padding: 15px;
+        }
+</style>
+
+<br />
+<div class="form-horizontal" ng-app="app">
+    <div ng-controller="EditCourse as vm">
+        
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="editCourseModalLabel">
+                    <label class="control-label">刪除</label>
+                </h4>
+
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <h4 style="text-align:center;">@Html.Raw(ViewBag.content)</h4>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-5 control-label">取消原因</label>
+                    <div class="col-md-5" id="">
+                        <textarea style="height: 250px;" ng-model="vm.remarks" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+                <div style="text-align: left" id="editError"></div>
+                <button type="button" class="btn btn-secondary" ng-click="vm.editClose()" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="vm.editSave()">Save changes</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+    var appModule = angular.module('app', ['ui.bootstrap']);
+    appModule.controller('EditCourse', ['$scope', '$http', function ($scope, $http) {
+        var vm = this;
+        $scope.isDisabled = 'N';
+        vm.courseID = @ViewBag.courseID;
+        vm.remarks = "";
+
+        vm.editClose = function () {
+
+            window.location = '/CourseManagement/Index';
+        }
+
+        vm.editSave = function () {
+            if (vm.remarks == "" || vm.remarks == undefined) {
+                sweetAlert("輸入請勿為空,請再做確認!!!", '', 'error');
+            } else {
+
+                $http({
+                    method: 'POST',
+                    url: "/CourseManagement/SaveDeleteCourse",
+                    data: { courseID: vm.courseID, remarks: vm.remarks },
+                    dataType: 'json',
+                }).then(function Callback(response) {
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        swal({
+                            title: response.data.message,
+                            type: 'success',
+                        })
+                            .then((res) => {
+                                window.location = '/CourseManagement/Index';
+                            }, function (dismiss) {
+                                // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
+                                window.location = '/CourseManagement/Index';
+                            });
+                    }
+                });
+            }
+            
+        }
+    
+
+    }]);
+</script>

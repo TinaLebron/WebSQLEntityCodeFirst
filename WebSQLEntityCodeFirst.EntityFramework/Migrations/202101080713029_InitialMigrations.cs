@@ -88,6 +88,7 @@
                         ID = c.Int(nullable: false, identity: true),
                         StartingSchoolYear = c.Int(nullable: false),
                         Semester = c.Int(nullable: false),
+                        NumberOfHours = c.Int(nullable: false),
                         ClassTimeId = c.Int(),
                         ClassroomId = c.Int(),
                         CourseId = c.Int(),
@@ -98,39 +99,12 @@
                 .PrimaryKey(t => t.ID)
                 .ForeignKey("dbo.ApplicationUsers", t => t.ApplicationUserId, cascadeDelete: true)
                 .ForeignKey("dbo.Classrooms", t => t.ClassroomId)
-                .ForeignKey("dbo.Courses", t => t.CourseId)
                 .ForeignKey("dbo.ClassTimes", t => t.ClassTimeId)
+                .ForeignKey("dbo.Courses", t => t.CourseId)
                 .Index(t => t.ClassTimeId)
                 .Index(t => t.ClassroomId)
                 .Index(t => t.CourseId)
                 .Index(t => t.ApplicationUserId);
-            
-            CreateTable(
-                "dbo.ChooseAClassroomLogs",
-                c => new
-                    {
-                        ID = c.Int(nullable: false, identity: true),
-                        Remarks = c.String(),
-                        CreatedUserId = c.Int(nullable: false),
-                        CreateDate = c.DateTime(),
-                        ClassTimeId = c.Int(),
-                        ClassroomId = c.Int(),
-                        CourseId = c.Int(),
-                        LogonId = c.String(),
-                        ApplicationUserId = c.Int(),
-                        ChooseAClassroomId = c.Int(nullable: false),
-                    })
-                .PrimaryKey(t => t.ID)
-                .ForeignKey("dbo.ApplicationUsers", t => t.ApplicationUserId)
-                .ForeignKey("dbo.ChooseAClassrooms", t => t.ChooseAClassroomId, cascadeDelete: true)
-                .ForeignKey("dbo.Classrooms", t => t.ClassroomId)
-                .ForeignKey("dbo.Courses", t => t.CourseId)
-                .ForeignKey("dbo.ClassTimes", t => t.ClassTimeId)
-                .Index(t => t.ClassTimeId)
-                .Index(t => t.ClassroomId)
-                .Index(t => t.CourseId)
-                .Index(t => t.ApplicationUserId)
-                .Index(t => t.ChooseAClassroomId);
             
             CreateTable(
                 "dbo.Classrooms",
@@ -146,6 +120,45 @@
                         LastModifiedUserId = c.Int(nullable: false),
                         LastModifyDate = c.DateTime(),
                         IsActive = c.Boolean(nullable: false),
+                    })
+                .PrimaryKey(t => t.ID);
+            
+            CreateTable(
+                "dbo.ChooseAClassroomLogs",
+                c => new
+                    {
+                        ID = c.Int(nullable: false, identity: true),
+                        Remarks = c.String(),
+                        CreatedUserId = c.Int(nullable: false),
+                        CreateDate = c.DateTime(),
+                        NumberOfHours = c.Int(nullable: false),
+                        ClassTimeId = c.Int(),
+                        ClassroomId = c.Int(),
+                        CourseId = c.Int(),
+                        LogonId = c.String(),
+                        ApplicationUserId = c.Int(),
+                        ChooseAClassroomId = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.ID)
+                .ForeignKey("dbo.ApplicationUsers", t => t.ApplicationUserId)
+                .ForeignKey("dbo.Classrooms", t => t.ClassroomId)
+                .ForeignKey("dbo.ClassTimes", t => t.ClassTimeId)
+                .ForeignKey("dbo.Courses", t => t.CourseId)
+                .Index(t => t.ClassTimeId)
+                .Index(t => t.ClassroomId)
+                .Index(t => t.CourseId)
+                .Index(t => t.ApplicationUserId);
+            
+            CreateTable(
+                "dbo.ClassTimes",
+                c => new
+                    {
+                        ID = c.Int(nullable: false, identity: true),
+                        Rank = c.Int(nullable: false),
+                        TimePeriod = c.String(),
+                        Time = c.String(),
+                        ClassPeriod = c.Int(nullable: false),
+                        Week = c.String(),
                     })
                 .PrimaryKey(t => t.ID);
             
@@ -195,15 +208,16 @@
                 .Index(t => t.ApplicationUserId);
             
             CreateTable(
-                "dbo.ClassTimes",
+                "dbo.CourseDescriptions",
                 c => new
                     {
                         ID = c.Int(nullable: false, identity: true),
-                        Rank = c.Int(nullable: false),
-                        TimePeriod = c.String(),
-                        Time = c.String(),
-                        ClassPeriod = c.Int(nullable: false),
-                        Week = c.String(),
+                        Objectives = c.String(),
+                        CourseOutline = c.String(),
+                        Textbooks = c.String(),
+                        ReferenceBooks = c.String(),
+                        Grading = c.String(),
+                        Schedule = c.String(),
                     })
                 .PrimaryKey(t => t.ID);
             
@@ -214,7 +228,7 @@
                         ID = c.Int(nullable: false, identity: true),
                         Remarks = c.String(),
                         Subject = c.String(nullable: false),
-                        SubjectNumber = c.Int(nullable: false),
+                        SubjectNumber = c.String(),
                         Credits = c.Int(nullable: false),
                         StartingSchoolYear = c.Int(nullable: false),
                         Semester = c.Int(nullable: false),
@@ -252,20 +266,6 @@
                 .Index(t => t.ClassroomId)
                 .Index(t => t.ApplicationUserId)
                 .Index(t => t.CourseId);
-            
-            CreateTable(
-                "dbo.CourseDescriptions",
-                c => new
-                    {
-                        ID = c.Int(nullable: false, identity: true),
-                        Objectives = c.String(),
-                        CourseOutline = c.String(),
-                        Textbooks = c.String(),
-                        ReferenceBooks = c.String(),
-                        Grading = c.String(),
-                        Schedule = c.String(),
-                    })
-                .PrimaryKey(t => t.ID);
             
             CreateTable(
                 "dbo.SectionDepartments",
@@ -324,33 +324,6 @@
                 .Index(t => t.StudentId);
             
             CreateTable(
-                "dbo.ElectiveLogs",
-                c => new
-                    {
-                        ID = c.Int(nullable: false, identity: true),
-                        Remarks = c.String(),
-                        CreatedUserId = c.Int(nullable: false),
-                        CreateDate = c.DateTime(),
-                        ClassTimeId = c.Int(),
-                        ClassroomId = c.Int(),
-                        CourseId = c.Int(),
-                        LogonId = c.String(),
-                        StudentId = c.Int(),
-                        ElectiveId = c.Int(nullable: false),
-                    })
-                .PrimaryKey(t => t.ID)
-                .ForeignKey("dbo.Classrooms", t => t.ClassroomId)
-                .ForeignKey("dbo.ClassTimes", t => t.ClassTimeId)
-                .ForeignKey("dbo.Courses", t => t.CourseId)
-                .ForeignKey("dbo.Electives", t => t.ElectiveId, cascadeDelete: true)
-                .ForeignKey("dbo.Students", t => t.StudentId)
-                .Index(t => t.ClassTimeId)
-                .Index(t => t.ClassroomId)
-                .Index(t => t.CourseId)
-                .Index(t => t.StudentId)
-                .Index(t => t.ElectiveId);
-            
-            CreateTable(
                 "dbo.UserStates",
                 c => new
                     {
@@ -406,6 +379,28 @@
                         CreateDate = c.DateTime(nullable: false),
                     })
                 .PrimaryKey(t => t.ID);
+            
+            CreateTable(
+                "dbo.ElectiveLogs",
+                c => new
+                    {
+                        ID = c.Int(nullable: false, identity: true),
+                        Remarks = c.String(),
+                        CreatedUserId = c.Int(nullable: false),
+                        CreateDate = c.DateTime(),
+                        StartingSchoolYear = c.Int(nullable: false),
+                        Semester = c.Int(nullable: false),
+                        Credits = c.Int(nullable: false),
+                        CourseId = c.Int(),
+                        LogonId = c.String(),
+                        StudentId = c.Int(),
+                        ElectiveId = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.ID)
+                .ForeignKey("dbo.Courses", t => t.CourseId)
+                .ForeignKey("dbo.Students", t => t.StudentId)
+                .Index(t => t.CourseId)
+                .Index(t => t.StudentId);
             
             CreateTable(
                 "dbo.Homes",
@@ -497,6 +492,8 @@
             DropForeignKey("dbo.AspNetUserLogins", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserClaims", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserRoles", "RoleId", "dbo.AspNetRoles");
+            DropForeignKey("dbo.ElectiveLogs", "StudentId", "dbo.Students");
+            DropForeignKey("dbo.ElectiveLogs", "CourseId", "dbo.Courses");
             DropForeignKey("dbo.Employees", "ClassroomId", "dbo.Classrooms");
             DropForeignKey("dbo.Employees", "ApplicationUserId", "dbo.ApplicationUsers");
             DropForeignKey("dbo.CourseStatus", "CourseId", "dbo.Courses");
@@ -504,32 +501,26 @@
             DropForeignKey("dbo.ApplicationUsers", "UserStateId", "dbo.UserStates");
             DropForeignKey("dbo.Students", "SectionDepartmentId", "dbo.SectionDepartments");
             DropForeignKey("dbo.Electives", "StudentId", "dbo.Students");
-            DropForeignKey("dbo.ElectiveLogs", "StudentId", "dbo.Students");
-            DropForeignKey("dbo.ElectiveLogs", "ElectiveId", "dbo.Electives");
-            DropForeignKey("dbo.ElectiveLogs", "CourseId", "dbo.Courses");
-            DropForeignKey("dbo.ElectiveLogs", "ClassTimeId", "dbo.ClassTimes");
-            DropForeignKey("dbo.ElectiveLogs", "ClassroomId", "dbo.Classrooms");
             DropForeignKey("dbo.Electives", "CourseId", "dbo.Courses");
             DropForeignKey("dbo.Students", "ApplicationUserId", "dbo.ApplicationUsers");
             DropForeignKey("dbo.CourseLogs", "SectionDepartmentId", "dbo.SectionDepartments");
             DropForeignKey("dbo.Courses", "SectionDepartmentId", "dbo.SectionDepartments");
             DropForeignKey("dbo.CourseLogs", "CourseDescriptionId", "dbo.CourseDescriptions");
-            DropForeignKey("dbo.Courses", "CourseDescriptionId", "dbo.CourseDescriptions");
             DropForeignKey("dbo.CourseLogs", "CourseId", "dbo.Courses");
             DropForeignKey("dbo.CourseLogs", "ClassTimeId", "dbo.ClassTimes");
             DropForeignKey("dbo.CourseLogs", "ClassroomId", "dbo.Classrooms");
             DropForeignKey("dbo.CourseLogs", "ApplicationUserId", "dbo.ApplicationUsers");
+            DropForeignKey("dbo.Courses", "CourseDescriptionId", "dbo.CourseDescriptions");
             DropForeignKey("dbo.Courses", "ClassTimeId", "dbo.ClassTimes");
-            DropForeignKey("dbo.ChooseAClassroomLogs", "ClassTimeId", "dbo.ClassTimes");
-            DropForeignKey("dbo.ChooseAClassrooms", "ClassTimeId", "dbo.ClassTimes");
             DropForeignKey("dbo.Courses", "ClassroomId", "dbo.Classrooms");
             DropForeignKey("dbo.ChooseAClassroomLogs", "CourseId", "dbo.Courses");
             DropForeignKey("dbo.ChooseAClassrooms", "CourseId", "dbo.Courses");
             DropForeignKey("dbo.Courses", "ApplicationUserId", "dbo.ApplicationUsers");
+            DropForeignKey("dbo.ChooseAClassroomLogs", "ClassTimeId", "dbo.ClassTimes");
+            DropForeignKey("dbo.ChooseAClassrooms", "ClassTimeId", "dbo.ClassTimes");
             DropForeignKey("dbo.ChooseAClassroomLogs", "ClassroomId", "dbo.Classrooms");
-            DropForeignKey("dbo.ChooseAClassrooms", "ClassroomId", "dbo.Classrooms");
-            DropForeignKey("dbo.ChooseAClassroomLogs", "ChooseAClassroomId", "dbo.ChooseAClassrooms");
             DropForeignKey("dbo.ChooseAClassroomLogs", "ApplicationUserId", "dbo.ApplicationUsers");
+            DropForeignKey("dbo.ChooseAClassrooms", "ClassroomId", "dbo.Classrooms");
             DropForeignKey("dbo.ChooseAClassrooms", "ApplicationUserId", "dbo.ApplicationUsers");
             DropForeignKey("dbo.Permissions", "MenuItemsId", "dbo.MenuItems");
             DropForeignKey("dbo.Permissions", "ApplicationRoles_ID", "dbo.ApplicationRoles");
@@ -539,14 +530,11 @@
             DropIndex("dbo.AspNetUserLogins", new[] { "UserId" });
             DropIndex("dbo.AspNetUserClaims", new[] { "UserId" });
             DropIndex("dbo.AspNetUsers", "UserNameIndex");
+            DropIndex("dbo.ElectiveLogs", new[] { "StudentId" });
+            DropIndex("dbo.ElectiveLogs", new[] { "CourseId" });
             DropIndex("dbo.Employees", new[] { "ApplicationUserId" });
             DropIndex("dbo.Employees", new[] { "ClassroomId" });
             DropIndex("dbo.CourseStatus", new[] { "CourseId" });
-            DropIndex("dbo.ElectiveLogs", new[] { "ElectiveId" });
-            DropIndex("dbo.ElectiveLogs", new[] { "StudentId" });
-            DropIndex("dbo.ElectiveLogs", new[] { "CourseId" });
-            DropIndex("dbo.ElectiveLogs", new[] { "ClassroomId" });
-            DropIndex("dbo.ElectiveLogs", new[] { "ClassTimeId" });
             DropIndex("dbo.Electives", new[] { "StudentId" });
             DropIndex("dbo.Electives", new[] { "CourseId" });
             DropIndex("dbo.Students", new[] { "UserStateId" });
@@ -563,7 +551,6 @@
             DropIndex("dbo.Courses", new[] { "ClassTimeId" });
             DropIndex("dbo.Courses", new[] { "SectionDepartmentId" });
             DropIndex("dbo.Courses", new[] { "CourseDescriptionId" });
-            DropIndex("dbo.ChooseAClassroomLogs", new[] { "ChooseAClassroomId" });
             DropIndex("dbo.ChooseAClassroomLogs", new[] { "ApplicationUserId" });
             DropIndex("dbo.ChooseAClassroomLogs", new[] { "CourseId" });
             DropIndex("dbo.ChooseAClassroomLogs", new[] { "ClassroomId" });
@@ -581,20 +568,20 @@
             DropTable("dbo.AspNetUserClaims");
             DropTable("dbo.AspNetUsers");
             DropTable("dbo.Homes");
+            DropTable("dbo.ElectiveLogs");
             DropTable("dbo.ApplicationUserRoles");
             DropTable("dbo.Employees");
             DropTable("dbo.CourseStatus");
             DropTable("dbo.UserStates");
-            DropTable("dbo.ElectiveLogs");
             DropTable("dbo.Electives");
             DropTable("dbo.Students");
             DropTable("dbo.SectionDepartments");
-            DropTable("dbo.CourseDescriptions");
             DropTable("dbo.CourseLogs");
-            DropTable("dbo.ClassTimes");
+            DropTable("dbo.CourseDescriptions");
             DropTable("dbo.Courses");
-            DropTable("dbo.Classrooms");
+            DropTable("dbo.ClassTimes");
             DropTable("dbo.ChooseAClassroomLogs");
+            DropTable("dbo.Classrooms");
             DropTable("dbo.ChooseAClassrooms");
             DropTable("dbo.ApplicationUsers");
             DropTable("dbo.MenuItems");

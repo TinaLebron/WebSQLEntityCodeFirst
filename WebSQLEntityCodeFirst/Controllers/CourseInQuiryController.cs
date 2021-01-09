@@ -29,14 +29,25 @@ namespace WebSQLEntityCodeFirst.Controllers
             SchoolContext db = new SchoolContext();
             var courses = db.Course.FirstOrDefault(x => x.CourseID == courseID);
             var applicationUsers = db.ApplicationUser.FirstOrDefault(x => x.ID == applicationUserId);
+            var applicationUsers1 = db.ApplicationUser.FirstOrDefault(x => x.ID == applicationUserId && x.UserStateId == 1);
             var employees = db.Employee.FirstOrDefault(x => x.ApplicationUserId == applicationUserId);
 
 
-
-            ViewBag.Email = (applicationUsers.Email==null)? "" : applicationUsers.Email;
-            ViewBag.SchoolNumber = (employees.Classroom.SchoolNumber == null) ? "" : employees.Classroom.Location + employees.Classroom.Floor + "(" + employees.Classroom.SchoolNumber + ")";
-            ViewBag.Tel = (employees.Tel == null) ? "" : employees.Tel;
-            ViewBag.ResearchAreas = (employees.ResearchAreas == null) ? "" : employees.ResearchAreas;
+            if (applicationUsers.ID != applicationUsers1.ID)
+            {
+                ViewBag.Email = "離職";
+                ViewBag.SchoolNumber = "";
+                ViewBag.Tel = "";
+                ViewBag.ResearchAreas = "";
+            }
+            else
+            {
+                ViewBag.Email = (applicationUsers.Email == null) ? "" : applicationUsers.Email;
+                ViewBag.SchoolNumber = (employees.Classroom.SchoolNumber == null) ? "" : employees.Classroom.Location + employees.Classroom.Floor + "(" + employees.Classroom.SchoolNumber + ")";
+                ViewBag.Tel = (employees.Tel == null) ? "" : employees.Tel;
+                ViewBag.ResearchAreas = (employees.ResearchAreas == null) ? "" : employees.ResearchAreas;
+            }
+            
 
             ViewBag.YearSemesters = yearSemesters;
             ViewBag.Subject = courses.Subject;
@@ -63,7 +74,7 @@ namespace WebSQLEntityCodeFirst.Controllers
 
 
         [HttpPost]
-        public JsonResult GetSectionDepartmentInitial(string courseSpecie,int schoolYear,string semester)
+        public JsonResult GetSectionDepartmentInitial(string courseSpecie, string status)
         {
             try
             {
@@ -71,6 +82,9 @@ namespace WebSQLEntityCodeFirst.Controllers
                 List<string> sectionDepartmentCoreList = new List<string>();
                 SchoolContext db = new SchoolContext();
                 List<CourseInQuiryInfos> courseInQuiryInfosList = new List<CourseInQuiryInfos>();
+                var courses = db.Course.Where(x=>x.IsActive==true).OrderByDescending(x=>x.CourseID).ToList();
+                int startingSchoolYear = courses[0].StartingSchoolYear;
+                string schoolSemester = (courses[0].Semester==Core.Enums.Semester.F)? "第一學期" : "第二學期";
 
                 if (courseSpecie == "系所課程")
                 {
@@ -87,7 +101,7 @@ namespace WebSQLEntityCodeFirst.Controllers
                         sectionDepartmentCoreList.Add(ns.Department);
                     }
 
-                    courseInQuiryInfosList = GetCourseInQuiryInfosList(schoolYear, semester, courseSpecie, "大學部", sectionDepartmentCores[0].Department, 1, "A");
+                    courseInQuiryInfosList = GetCourseInQuiryInfosList(startingSchoolYear, schoolSemester, courseSpecie, "大學部", sectionDepartmentCores[0].Department, 1, "A", status);
 
                 }
                 else if (courseSpecie == "共同課程")
@@ -105,11 +119,11 @@ namespace WebSQLEntityCodeFirst.Controllers
                         sectionDepartmentCoreList.Add(ns.Department);
                     }
 
-                    courseInQuiryInfosList = GetCourseInQuiryInfosList(schoolYear, semester, courseSpecie, "大學部", sectionDepartmentCores[0].Department, 1, null);
+                    courseInQuiryInfosList = GetCourseInQuiryInfosList(startingSchoolYear, schoolSemester, courseSpecie, "大學部", sectionDepartmentCores[0].Department, 1, null, status);
 
                 }
 
-                return Json(new { sections = sectionList, sectionDepartmentCores = sectionDepartmentCoreList, courseInQuiryInfos = courseInQuiryInfosList });
+                return Json(new { schoolYear = startingSchoolYear, semester = schoolSemester, sections = sectionList, sectionDepartmentCores = sectionDepartmentCoreList, courseInQuiryInfos = courseInQuiryInfosList });
             }
             catch (Exception ex)
             {
@@ -204,11 +218,11 @@ namespace WebSQLEntityCodeFirst.Controllers
         }
 
         [HttpPost]
-        public JsonResult CourseSearch(int schoolYear,string semester,string courseSpecie,string section,string department,int grade,string class1)
+        public JsonResult CourseSearch(int schoolYear,string semester,string courseSpecie,string section,string department,int grade,string class1,string status)
         {
             try
             {
-                var courseInQuiryInfosList = GetCourseInQuiryInfosList(schoolYear, semester, courseSpecie, section, department, grade, class1);
+                var courseInQuiryInfosList = GetCourseInQuiryInfosList(schoolYear, semester, courseSpecie, section, department, grade, class1, status);
 
                 return Json(new { courseInQuiryInfos = courseInQuiryInfosList });
             }
@@ -218,7 +232,7 @@ namespace WebSQLEntityCodeFirst.Controllers
             }
         }
 
-        public List<CourseInQuiryInfos> GetCourseInQuiryInfosList(int schoolYear, string semester, string courseSpecie, string section, string department, int grade, string class1)
+        public List<CourseInQuiryInfos> GetCourseInQuiryInfosList(int schoolYear, string semester, string courseSpecie, string section, string department, int grade, string class1, string status)
         {
             List<CourseInQuiryInfos> courseInQuiryInfosList = new List<CourseInQuiryInfos>();
             SchoolContext db = new SchoolContext();
@@ -237,12 +251,13 @@ namespace WebSQLEntityCodeFirst.Controllers
             if (courseSpecie == "系所課程")
             {
                 var Courses = db.Course.Where(x => x.StartingSchoolYear == schoolYear && x.Semester == semester1 && x.SectionDepartment.CourseSorts == CourseSorts.C
-                && x.SectionDepartment.Section == section && x.SectionDepartment.Department == department && x.Grade == grade && x.Class == class1).OrderBy(x => x.CourseID).ToList();
+                && x.SectionDepartment.Section == section && x.SectionDepartment.Department == department && x.Grade == grade && x.Class == class1 && x.IsActive == true).OrderBy(x => x.CourseID).ToList();
 
 
                 foreach (var c in Courses)
                 {
                     string requiredElective = "";
+                    string status1 = GetStatusProgress(c.SignupBeginDate, c.SignupEndDate);
 
                     if (c.RequiredElective == RequiredElective.E)
                     {
@@ -260,35 +275,42 @@ namespace WebSQLEntityCodeFirst.Controllers
                         schoolNumber = c.Classroom.SchoolNumber;
                     }
 
-
-                    CourseInQuiryInfos courseInQuiryInfos = new CourseInQuiryInfos
+                    if (status == status1 || status == null)
                     {
-                        CourseID = c.CourseID,
-                        Subject = c.Subject,
-                        SubjectNumber = c.SubjectNumber,
-                        Credits = c.Credits,
-                        GradeClass = c.SectionDepartment.Section + c.SectionDepartment.DepartmentAbbreviation + c.Grade + c.Class,
-                        RequiredElective = requiredElective,
-                        TimeLocation = GetTimeLocation(c.ClassTimeId, c.NumberOfHours, schoolNumber),
-                        Instructor = c.ApplicationUser.UserName,
-                        MaximumNum = c.MinNumber + "-" + c.MaxNumber,
-                        CurrentNum = GetCurrentNum(c.CourseID),
-                        ApplicationUserId = c.ApplicationUserId
-                    };
+                        CourseInQuiryInfos courseInQuiryInfos = new CourseInQuiryInfos
+                        {
+                            CourseID = c.CourseID,
+                            Subject = c.Subject,
+                            SubjectNumber = c.SubjectNumber,
+                            Credits = c.Credits,
+                            ClassYear = schoolYear + " " + semester,
+                            GradeClass = c.SectionDepartment.Section + c.SectionDepartment.DepartmentAbbreviation + c.Grade + c.Class,
+                            RequiredElective = requiredElective,
+                            TimeLocation = GetTimeLocation(c.ClassTimeId, c.NumberOfHours, schoolNumber),
+                            Instructor = c.ApplicationUser.UserName,
+                            MaximumNum = c.MinNumber + "-" + c.MaxNumber,
+                            CurrentNum = GetCurrentNum(c.CourseID),
+                            ApplicationUserId = c.ApplicationUserId,
+                            Status = status1
+                        };
+                        courseInQuiryInfosList.Add(courseInQuiryInfos);
+                    }
+                    
+                    
 
-
-                    courseInQuiryInfosList.Add(courseInQuiryInfos);
+                    
                 }
             }
             else if (courseSpecie == "共同課程")
             {
                 var Courses = db.Course.Where(x => x.StartingSchoolYear == schoolYear && x.Semester == semester1 && x.SectionDepartment.CourseSorts == CourseSorts.G
-                && x.SectionDepartment.Section == section && x.SectionDepartment.Department == department && x.Grade == grade).OrderBy(x => x.CourseID).ToList();
+                && x.SectionDepartment.Section == section && x.SectionDepartment.Department == department && x.Grade == grade && x.IsActive == true).OrderBy(x => x.CourseID).ToList();
 
 
                 foreach (var c in Courses)
                 {
                     string requiredElective = "";
+                    string status1 = GetStatusProgress(c.SignupBeginDate, c.SignupEndDate);
 
                     if (c.RequiredElective == RequiredElective.E)
                     {
@@ -306,24 +328,30 @@ namespace WebSQLEntityCodeFirst.Controllers
                         schoolNumber = c.Classroom.SchoolNumber;
                     }
 
-
-                    CourseInQuiryInfos courseInQuiryInfos = new CourseInQuiryInfos
+                    if (status == status1 || status == null)
                     {
-                        CourseID = c.CourseID,
-                        Subject = c.Subject,
-                        SubjectNumber = c.SubjectNumber,
-                        Credits = c.Credits,
-                        GradeClass = c.SectionDepartment.Section + c.SectionDepartment.DepartmentAbbreviation + c.Grade,
-                        RequiredElective = requiredElective,
-                        TimeLocation = GetTimeLocation(c.ClassTimeId, c.NumberOfHours, schoolNumber),
-                        Instructor = c.ApplicationUser.UserName,
-                        MaximumNum = c.MinNumber + "-" + c.MaxNumber,
-                        CurrentNum = GetCurrentNum(c.CourseID),
-                        ApplicationUserId = c.ApplicationUserId
-                    };
+                        CourseInQuiryInfos courseInQuiryInfos = new CourseInQuiryInfos
+                        {
+                            CourseID = c.CourseID,
+                            Subject = c.Subject,
+                            SubjectNumber = c.SubjectNumber,
+                            Credits = c.Credits,
+                            ClassYear = schoolYear + " " + semester,
+                            GradeClass = c.SectionDepartment.Section + c.SectionDepartment.DepartmentAbbreviation + c.Grade,
+                            RequiredElective = requiredElective,
+                            TimeLocation = GetTimeLocation(c.ClassTimeId, c.NumberOfHours, schoolNumber),
+                            Instructor = c.ApplicationUser.UserName,
+                            MaximumNum = c.MinNumber + "-" + c.MaxNumber,
+                            CurrentNum = GetCurrentNum(c.CourseID),
+                            ApplicationUserId = c.ApplicationUserId,
+                            Status = status1
+                        };
 
 
-                    courseInQuiryInfosList.Add(courseInQuiryInfos);
+                        courseInQuiryInfosList.Add(courseInQuiryInfos);
+                    }
+
+                    
                 }
             }
 
@@ -361,7 +389,30 @@ namespace WebSQLEntityCodeFirst.Controllers
             return courseStatus;
 
         }
-        
+
+        public string GetStatusProgress(DateTime SignupBeginDate, DateTime SignupEndDate)
+        {
+            string status = "";
+
+            if (DateTime.Now < SignupBeginDate)
+            {
+                status = "未開始";
+            }
+            else if(DateTime.Now > SignupBeginDate && DateTime.Now < SignupEndDate)
+            {
+                status = "進行中";
+            }
+            else if (DateTime.Now > SignupEndDate)
+            {
+                status = "已結束";
+            }
+
+
+            return status;
+
+        }
+
+       
 
     }
 }

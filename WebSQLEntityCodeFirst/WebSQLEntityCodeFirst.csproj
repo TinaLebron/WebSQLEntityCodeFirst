@@ -136,13 +136,13 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\CourseInQuiryController.cs" />
     <Compile Include="Controllers\CourseManagementController.cs" />
+    <Compile Include="Controllers\CourseManagementToTeacherController.cs" />
     <Compile Include="Controllers\CourseWorkController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MyCourseLlistController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\NewsManagementController.cs" />
     <Compile Include="Controllers\PasswordSettingController.cs" />
-    <Compile Include="Controllers\SyllabusController.cs" />
     <Compile Include="Controllers\TutorScheduleController.cs" />
     <Compile Include="Controllers\UserInfoController.cs" />
     <Compile Include="Global.asax.cs">
@@ -161,6 +161,11 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Images\add.png" />
+    <Content Include="Images\calendar.png" />
+    <Content Include="Images\delete.png" />
+    <Content Include="Images\edit.png" />
+    <Content Include="Images\elective.png" />
     <Content Include="Images\file.png" />
     <Content Include="Images\school.PNG" />
     <Content Include="Scripts\angular-animate.js" />
@@ -954,6 +959,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\multiselect.min\multiselect.min.js" />
     <Content Include="Scripts\sitemap.xml" />
     <Content Include="Scripts\summernote\lang\summernote-ar-AR.js" />
     <Content Include="Scripts\summernote\lang\summernote-ar-AR.min.js" />
@@ -1115,6 +1121,7 @@
     <Content Include="Scripts\test-bundles\angular-route.js" />
     <Content Include="Scripts\test-bundles\angular-sanitize.js" />
     <Content Include="Scripts\test-bundles\angular-touch.js" />
+    <Content Include="Scripts\ui-bootstrap\ui-bootstrap-tpls-2.5.0.min.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -1143,8 +1150,6 @@
     <Content Include="Views\CourseManagement\_ViewStart.cshtml" />
     <Content Include="Views\TutorSchedule\_ViewStart.cshtml" />
     <Content Include="Views\TutorSchedule\Index.cshtml" />
-    <Content Include="Views\Syllabus\_ViewStart.cshtml" />
-    <Content Include="Views\Syllabus\Index.cshtml" />
     <Content Include="Views\CourseWork\_ViewStart.cshtml" />
     <Content Include="Views\CourseWork\Index.cshtml" />
     <Content Include="Views\CourseInQuiry\_ViewStart.cshtml" />
@@ -1164,6 +1169,13 @@
     <Content Include="Scripts\summernote\summernote.js.map" />
     <Content Include="Scripts\summernote\summernote.min.js.map" />
     <Content Include="Views\CourseInQuiry\Syllabus.cshtml" />
+    <Content Include="Views\CourseManagement\EditCourse.cshtml" />
+    <Content Include="Views\CourseManagement\DeleteCourse.cshtml" />
+    <Content Include="Views\CourseManagement\ElectiveCourse.cshtml" />
+    <Content Include="Views\CourseManagement\DeleteElectiveCourseList.cshtml" />
+    <Content Include="Views\CourseManagementToTeacher\_ViewStart.cshtml" />
+    <Content Include="Views\CourseManagementToTeacher\Index.cshtml" />
+    <Content Include="Views\CourseManagementToTeacher\EditCourse.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

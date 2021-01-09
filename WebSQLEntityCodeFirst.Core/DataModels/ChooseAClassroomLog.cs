@@ -14,6 +14,7 @@ namespace WebSQLEntityCodeFirst.Core.DataModels
         public string Remarks { get; set; }
         public int CreatedUserId { get; set; } //建立者
         public DateTime? CreateDate { get; set; } //建立時間
+        public int NumberOfHours { get; set; } //上課時數
         public int? ClassTimeId { get; set; }
         public int? ClassroomId { get; set; }
         public int? CourseId { get; set; }
@@ -25,7 +26,7 @@ namespace WebSQLEntityCodeFirst.Core.DataModels
         public virtual ClassTime ClassTime { get; set; }
         public virtual Classroom Classroom { get; set; }
         public virtual Course Course { get; set; } //課程
-        public virtual ChooseAClassroom ChooseAClassroom { get; set; }
+        //public virtual ChooseAClassroom ChooseAClassroom { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
 
     }
