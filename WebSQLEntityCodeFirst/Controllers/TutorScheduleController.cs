@@ -22,7 +22,7 @@ namespace WebSQLEntityCodeFirst.Controllers
             try
             {
                 SchoolContext db = new SchoolContext();
-                List<UserSchedulesDto> courseInQuiryInfosList = new List<UserSchedulesDto>();
+                List<UserSchedulesDto> userSchedulesDtoList = new List<UserSchedulesDto>();
                 List<CourseToUserSchedulesDto> courseDtoList = new List<CourseToUserSchedulesDto>();
                 string loginId = Session["sIDNo"].ToString();
                 var courses = db.Course.Where(x => x.IsActive == true).OrderByDescending(x => x.CourseID).ToList();
@@ -146,12 +146,12 @@ namespace WebSQLEntityCodeFirst.Controllers
                         }
                     }
 
-                    courseInQuiryInfosList.Add(userSchedulesDto);
+                    userSchedulesDtoList.Add(userSchedulesDto);
 
 
                 }
 
-                return Json(new { schoolYear = startingSchoolYear, semester = schoolSemester, schedules = courseInQuiryInfosList });
+                return Json(new { schoolYear = startingSchoolYear, semester = schoolSemester, schedules = userSchedulesDtoList });
             }
             catch (Exception ex)
             {
@@ -165,7 +165,7 @@ namespace WebSQLEntityCodeFirst.Controllers
             try
             {
                 SchoolContext db = new SchoolContext();
-                List<UserSchedulesDto> courseInQuiryInfosList = new List<UserSchedulesDto>();
+                List<UserSchedulesDto> userSchedulesDtoList = new List<UserSchedulesDto>();
                 List<CourseToUserSchedulesDto> courseDtoList = new List<CourseToUserSchedulesDto>();
                 string loginId = Session["sIDNo"].ToString();
                 var schoolSemester = (semester == "第一學期") ? Core.Enums.Semester.F : Core.Enums.Semester.S;
@@ -286,12 +286,12 @@ namespace WebSQLEntityCodeFirst.Controllers
                         }
                     }
 
-                    courseInQuiryInfosList.Add(userSchedulesDto);
+                    userSchedulesDtoList.Add(userSchedulesDto);
 
 
                 }
 
-                return Json(new { schedules = courseInQuiryInfosList });
+                return Json(new { schedules = userSchedulesDtoList });
             }
             catch (Exception ex)
             {

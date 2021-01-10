@@ -161,20 +161,6 @@
                                 <th width="33px">目前人數<br><span style="font-size:0.9em">Syllabus</span></th>
                             </tr>
                         </thead>
-                        @*<tbody>
-                            <tr ng-repeat="courseInQuiryInfo in courseInQuiryInfos">
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.Subject}}</td>
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.SubjectNumber}}</td>
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.Credits}}</td>
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.GradeClass}}</td>
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.RequiredElective}}</td>
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.TimeLocation}}</td>
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.Instructor}}</td>
-                                <td style="font-weight:bold;"><img style="width:40px" src="~/Images/file.png" /></td>
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.MaximumNum}}</td>
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.CurrentNum}}</td>
-                            </tr>
-                        </tbody>*@
                         <tfoot>
                             <tr>
                                 <th width="100px">課名<br><span style="font-size:0.9em">Course title</span></th>
@@ -393,7 +379,6 @@
                         sweetAlert(response.data.message, '', 'error');
                     }
                     else {
-                        //$scope.courseInQuiryInfos = response.data.courseInQuiryInfos;
 
                         $("#myDataTalbe").DataTable({
                             searching: false, //關閉filter功能
