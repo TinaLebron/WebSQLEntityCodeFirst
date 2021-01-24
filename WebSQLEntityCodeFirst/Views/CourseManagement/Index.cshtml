@@ -14,24 +14,1110 @@
     //沒使用_ViewStart就要自訂Layout位置
     //Layout = "~/Views/Shared/_UserInfoLayout.cshtml";
 
+    <link rel="stylesheet" href="~/Content/jquery.dataTables.min.css" />
+    <script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/ui-bootstrap/ui-bootstrap-tpls-2.5.0.min.js"></script>
+    <script src="~/Scripts/SweetAlert/sweetalert.min.js"></script>
+    <link href="~/Content/SweetAlert/sweetalert.css" rel="stylesheet" />
+    <script src="~/Scripts/SweetAlert/sweetalert-dev.min.js"></script>
 }
 
+<style>
+    .panel-primary {
+        border-color: #337ab7 !important;
+    }
+    .panel {
+        margin-bottom: 8px;
+        background-color: #fff;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    }
+
+    .panel-primary > .panel-heading {
+        color: #fff;
+        background-color: #337ab7;
+        border-color: #337ab7;
+    }
+
+    .panel-heading {
+        padding: 10px 15px;
+        border-bottom: 1px solid transparent;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+    }
+    .panel-body {
+        padding: 15px;
+    }
+
+    .form-controlCustom {
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    }
+
+
+</style>
 
 <br />
 <div class="form-horizontal" ng-app="app">
     <div ng-controller="CourseManagement as vm">
-        <h4>選課後台</h4>
-        <hr />
+        <div class="panel panel-primary">
+            <div class="panel-heading" style="font-size:18px;font-weight:800;">
+                <img style="width:18px;margin-right:8px" src="../Images/search.png" />
+                &nbsp;選課後台
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-12" style="line-height:35px">
+                    <select ng-model="schoolYear" ng-options=" member for member in schoolYears" class="form-controlCustom "></select>
+                    <select ng-model="semester" ng-options=" member for member in semesters" class="form-controlCustom "></select>
+                    <select ng-model="courseSpecie" ng-options=" member for member in courseSpecies" ng-change="vm.courseSpeciesChange()" class="form-controlCustom"></select>
+                    <select ng-show="courseSpecie === '系所課程'" ng-model="section1" ng-options=" member for member in sections1" ng-change="vm.sectionsChange1()" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '共同課程'" ng-model="section2" ng-options=" member for member in sections2" ng-change="vm.sectionsChange2()" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '系所課程'" ng-model="department1" ng-options=" member for member in departments1" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '共同課程'" ng-model="department2" ng-options=" member for member in departments2" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '系所課程'" ng-model="grade1" ng-options=" member for member in grades1" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '共同課程'" ng-model="grade2" ng-options=" member for member in grades2" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '系所課程'" ng-model="class1" ng-options=" member for member in classes" class="form-controlCustom "></select>
+                    <select ng-model="status" ng-options=" member for member in statuses" class="form-controlCustom "></select>
+                    <button type="button" class="btn btn-primary" ng-click="vm.search()">搜尋</button>
+                </div>
+            </div>
+        </div>
+        <a href="" title="新增" ng-click="vm.addCourse()" data-toggle="modal" data-target="#addCourseModal"><img style="width:35px;margin-bottom: 13px;" src="../Images/add.png" /></a>
+       
+        <!-- Main content -->
+        <section class="content container-fluid">
+            <div class="box">
+                <div>
 
+                    <table class="table table-striped table-hover" id="myDataTalbe">
+                        <thead>
+                            <tr>
+                                <th width="100px">課名<br><span style="font-size:0.9em">Course title</span></th>
+                                <th width="50px">開課碼<br><span style="font-size:0.9em">Course<br>Number</span></th>
+                                <th width="110px">開課學年<br><span style="font-size:0.9em">Class Year</span></th>
+                                <th width="110px">開課系級<br><span style="font-size:0.9em">Grade &amp; Class</span></th>
+                                <th width="60px">教師<br><span style="font-size:0.9em">Instructor</span></th>
+                                <th width="33px">課綱<br><span style="font-size:0.9em">Syllabus</span></th>
+                                <th width="33px">狀態<br><span style="font-size:0.9em">Status</span></th>
+                                <th width="110px"></th>
+                            </tr>
+                        </thead>
+                        @*<tbody>
+                <tr ng-repeat="courseInQuiryInfo in courseInQuiryInfos">
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.Subject}}</td>
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.SubjectNumber}}</td>
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.Credits}}</td>
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.GradeClass}}</td>
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.RequiredElective}}</td>
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.TimeLocation}}</td>
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.Instructor}}</td>
+                    <td style="font-weight:bold;"><img style="width:40px" src="~/Images/file.png" /></td>
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.MaximumNum}}</td>
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.CurrentNum}}</td>
+                </tr>
+            </tbody>
+        <tfoot>
+            <tr>
+                <th width="100px">課名<br><span style="font-size:0.9em">Course title</span></th>
+                <th width="50px">開課碼<br><span style="font-size:0.9em">Course<br>Number</span></th>
+                <th width="110px">開課學年<br><span style="font-size:0.9em">Class Year</span></th>
+                <th width="110px">開課系級<br><span style="font-size:0.9em">Grade &amp; Class</span></th>
+                <th width="60px">教師<br><span style="font-size:0.9em">Instructor</span></th>
+                <th width="33px">課綱<br><span style="font-size:0.9em">Syllabus</span></th>
+                <th width="33px">狀態<br><span style="font-size:0.9em">Status</span></th>
+                <th width="110px"></th>
+            </tr>
+        </tfoot>*@
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!--ADD Modal -->
+        <div class="modal fade" id="addCourseModal" tabindex="-1" role="dialog" aria-labelledby="addCourseModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="addCourseModalLabel">
+                            <label class="control-label">新增</label>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </h4>
+
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <ul id="myTab" class="nav nav-tabs">
+                                <li class="active">
+                                    <a href="#info" data-toggle="tab">
+                                        開課資訊
+                                    </a>
+                                </li>
+                                <li><a href="#course" data-toggle="tab">課程大綱</a></li>
+                            </ul>
+                            <div id="myTabContent" class="tab-content">
+                                <div class="tab-pane fade in active" id="info">
+                                    <br />
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">學年</label>
+                                        <div class="col-md-10" id="">
+                                            <select ng-model="addSchoolYear" ng-options=" member for member in addSchoolYears" class="form-control "></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">學期</label>
+                                        <div class="col-md-10" id="">
+                                            <select ng-model="addSemester" ng-options=" member for member in addSemesters" class="form-control "></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">課程名稱</label>
+                                        <div class="col-md-10" id="">
+                                            <input type="text" ng-model="vm.addSubject" class="form-control" autocomplete=off />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">開課碼</label>
+                                        <div class="col-md-10" id="">
+                                            <input id="addSubjectNumber" autocomplete=off type="text" ng-model="vm.addSubjectNumber" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">開始上課時間</label>
+                                        <div class="col-md-10" id="">
+                                            <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="vm.addCourseDate" is-open="open1" clear-text="清空" current-text="今天" close-text="取消" alt-input-formats="altInputFormats" ng-click="open1=!open1" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">開始開放選課</label>
+                                        <div class="col-md-10" id="">
+                                            <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="vm.addSignupBeginDate" is-open="open2" clear-text="清空" current-text="今天" close-text="取消" alt-input-formats="altInputFormats" ng-click="open2=!open2" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">結束開放選課</label>
+                                        <div class="col-md-10" id="">
+                                            <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="vm.addSignupEndDate" is-open="open3" clear-text="清空" current-text="今天" close-text="取消" alt-input-formats="altInputFormats" ng-click="open3=!open3" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">最低人數</label>
+                                        <div class="col-md-10" id="">
+                                            <input class="form-control" size="80" maxlength="255" type="number" step="1" min="0" value="0" ng-model="vm.addMinNumber" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">最高人數</label>
+                                        <div class="col-md-10" id="">
+                                            <input class="form-control" size="80" maxlength="255" type="number" step="1" min="1" value="0" ng-model="vm.addMaxNumber" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">課程類別</label>
+                                        <div class="col-md-10" id="">
+                                            <select ng-model="addCourseSort" ng-options=" member for member in addCourseSorts" ng-change="vm.addCourseSortsChange()" class="form-control "></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">部別</label>
+                                        <div class="col-md-10" id="">
+                                            <select ng-show="addCourseSort === '系所課程'" ng-model="addSection1" ng-options=" member for member in addSections1" ng-change="vm.addSectionsChange1()" class="form-control "></select>
+                                            <select ng-show="addCourseSort === '共同課程'" ng-model="addSection2" ng-options=" member for member in addSections2" ng-change="vm.addSectionsChange2()" class="form-control "></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">科系</label>
+                                        <div class="col-md-10" id="">
+                                            <select ng-show="addCourseSort === '系所課程'" ng-model="addDepartment1" ng-options=" member for member in addDepartments1" class="form-control "></select>
+                                            <select ng-show="addCourseSort === '共同課程'" ng-model="addDepartment2" ng-options=" member for member in addDepartments2" class="form-control "></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">年級</label>
+                                        <div class="col-md-10" id="">
+                                            <select ng-show="addCourseSort === '系所課程'" ng-model="addGrade1" ng-options=" member for member in addGrades1" class="form-control "></select>
+                                            <select ng-show="addCourseSort === '共同課程'" ng-model="addGrade2" ng-options=" member for member in addGrades2" class="form-control "></select>
+                                        </div>
+                                    </div>
+                                    <div ng-show="addCourseSort === '系所課程'" class="form-group">
+                                        <label class="col-md-2 control-label">班級</label>
+                                        <div class="col-md-10" id="">
+                                            <select ng-model="addClass1" ng-options=" member for member in addClasses1" class="form-control "></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">授課教師代碼</label>
+                                        <div class="col-md-10" id="">
+                                            <input id="addUserName" autocomplete=off type="text" ng-model="addUserName" uib-typeahead="member for member in addUserNames | filter:$viewValue | limitTo:8" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">必修/選修</label>
+                                        <div class="col-md-10" id="">
+                                            <select ng-model="addRequiredElective" ng-options=" member for member in addRequiredElectives" class="form-control "></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">學分</label>
+                                        <div class="col-md-10" id="">
+                                            <input class="form-control" size="80" maxlength="255" type="number" step="1" min="0" value="0" ng-model="vm.addCredits" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">上課時數</label>
+                                        <div class="col-md-10" id="">
+                                            <input class="form-control" size="80" maxlength="255" type="number" step="1" min="1" value="0" ng-model="vm.addNumberOfHours" ng-change="" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">實習時數</label>
+                                        <div class="col-md-10" id="">
+                                            <input class="form-control" size="80" maxlength="255" type="number" step="1" min="0" value="0" ng-model="vm.addHoursInternship" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">上課地點</label>
+                                        <div class="col-md-10" id="">
+                                            <input id="addSchoolNumber" autocomplete=off type="text" ng-model="addSchoolNumber" uib-typeahead="member for member in addSchoolNumbers | filter:$viewValue | limitTo:8" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">上課時間</label>
+                                        <div class="col-md-2" id="">
+                                            星期
+                                            <select ng-model="addWeek" ng-options=" member for member in addWeeks" class="form-control "></select>
+                                        </div>
+                                        <div class="col-md-2" id="">
+                                            第
+                                            <input id="addFTime" class="form-control" size="80" maxlength="255" type="number" step="1" min="0" max="14" value="0" ng-model="vm.addFTime" ng-change="" />
+                                            節
+                                        </div>
+                                        <div class="col-md-1"> 到 </div>
+                                        <div class="col-md-2" id="">
+                                            第
+                                            <input class="form-control" size="80" maxlength="255" type="number" step="1" min="0" max="14" value="0" ng-model="vm.addETime" ng-change="" />
+                                            節
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="tab-pane fade" id="course">
+                                    <br />
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">授課目標</label>
+                                        <div class="col-md-10" id="">
+                                            <textarea style="height: 500px;" ng-model="vm.addObjectives" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">授課大綱</label>
+                                        <div class="col-md-10" id="">
+                                            <textarea style="height: 300px;" ng-model="vm.addCourseOutline" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">教科書</label>
+                                        <div class="col-md-10" id="">
+                                            <textarea style="height: 300px;" ng-model="vm.addTextbooks" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">參考書籍</label>
+                                        <div class="col-md-10" id="">
+                                            <textarea style="height: 300px;" ng-model="vm.addReferenceBooks" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">成績考核準則</label>
+                                        <div class="col-md-10" id="">
+                                            <textarea style="height: 300px;" ng-model="vm.addGrading" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-2 control-label">授課進度</label>
+                                        <div class="col-md-10" id="">
+                                            <textarea style="height: 1000px;" ng-model="vm.addSchedule" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+
+                        <div style="text-align: left" id="addError"></div>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" ng-click="vm.addSave()">確定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 
+
 <script type="text/javascript">
 
-    var appModule = angular.module('app', []);
+    var appModule = angular.module('app', ['ui.bootstrap']);
     appModule.controller('CourseManagement', ['$scope', '$http', function ($scope, $http) {
         var vm = this;
+        $scope.isDisabled = 'N';
 
+        //
+        $scope.schoolYears = [];
+        $scope.semesters = ["第一學期", "第二學期"];
+        $scope.courseSpecies = ["系所課程", "共同課程"];
+        $scope.courseSpecie = "系所課程";
+        $scope.sections1 = [];
+        $scope.section1 = "大學部";
+        $scope.sections2 = [];
+        $scope.section2 = "大學部";
+        $scope.departments1 = [];
+        $scope.department1 = "";
+        $scope.departments2 = [];
+        $scope.department2 = "";
+        $scope.grades1 = [1, 2, 3, 4];
+        $scope.grade1 = 1;
+        $scope.grades2 = [1, 2, 3, 4];
+        $scope.grade2 = 1;
+        $scope.classes = ["A", "B", "C"];
+        $scope.class1 = "A";
+        $scope.statuses = ["未開始", "進行中", "已結束"];
+        $scope.status = "未開始";
+
+        //Add
+        $scope.addSchoolYears = [];
+        $scope.addSemesters = ["第一學期", "第二學期"];
+        vm.addSubject = "";
+        vm.addSubjectNumber = "";
+        vm.addCourseDate = new Date();
+        vm.addSignupBeginDate = new Date();
+        vm.addSignupEndDate = new Date();
+        vm.addMinNumber = 0;
+        vm.addMaxNumber = 1;
+        $scope.addCourseSorts = ["系所課程", "共同課程"];
+        $scope.addCourseSort = "系所課程";
+        $scope.addSections1 = [];
+        $scope.addSection1 = "大學部";
+        $scope.addSections2 = [];
+        $scope.addSection2 = "大學部";
+        $scope.addDepartments1 = [];
+        $scope.addDepartment1 = "";
+        $scope.addDepartments2 = [];
+        $scope.addDepartment2 = "";
+        $scope.addGrades1 = [1, 2, 3, 4];
+        $scope.addGrade1 = 1;
+        $scope.addGrades2 = [1, 2, 3, 4];
+        $scope.addGrade2 = 1;
+        $scope.addClasses1 = ["A", "B", "C"];
+        $scope.addClass1 = "A";
+        $scope.addUserNames = [];
+        $scope.addUserName = "";
+        $scope.addRequiredElectives = ["必修", "選修"];
+        $scope.addRequiredElective = "必修";
+        vm.addCredits = 0;
+        vm.addNumberOfHours = 1;
+        vm.addHoursInternship = 0;
+        $scope.addWeeks = ["一", "二", "三", "四", "五", "六", "日"];
+        $scope.addWeek = "一";
+        vm.addFTime = 0;
+        vm.addETime = 1;
+        $scope.addSchoolNumbers = [];
+        $scope.addSchoolNumber = "";
+        vm.adderrorInfo = "";
+
+
+        function initial() {
+            $http({
+
+                method: 'POST',
+                url: "/CourseInQuiry/GetSectionDepartmentInitial",
+                data: { courseSpecie: $scope.courseSpecie, status: $scope.status },
+                dataType: 'json',
+
+            }).then(function Callback(response) {
+
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+                    for (var i = 90; i <= response.data.schoolYear; i++) {
+                        //從2011開始
+                        $scope.schoolYears.push(i);
+                    }
+
+                    $scope.schoolYear = response.data.schoolYear;
+                    $scope.semester = response.data.semester;
+                    $scope.sections1 = response.data.sections;
+                    $scope.departments1 = response.data.sectionDepartmentCores;
+                    $scope.department1 = response.data.sectionDepartmentCores[0];
+
+                    $("#myDataTalbe").DataTable({
+                        searching: false, //關閉filter功能
+                        data: response.data.courseInQuiryInfos,
+                        order: [[1, "asc"]],
+                        columnDefs: [{
+                            targets: [3],
+                            orderable: false,
+                        }],
+                        destroy: true, //Cannot reinitialise DataTable,解决重新加载表格内容问题,
+                        columns: [
+                            { data: "Subject" },
+                            { data: "SubjectNumber" },
+                            { data: "ClassYear" },
+                            { data: "GradeClass" },
+                            { data: "Instructor" },
+                            {
+                                data: "", render: function (data, type, row) {
+                                    var yearSemesters = $scope.schoolYear + " " + $scope.semester;
+                                    return '<a target="_blank" href="/CourseInQuiry/Syllabus?yearSemesters=' + yearSemesters + '&courseID=' + row.CourseID
+                                        + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
+                                        + '&requiredElective=' + row.RequiredElective
+                                        + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
+                                        + ' "><img style="width:35px" src="../Images/file.png" /></a>';
+                                }
+                            },
+                            { data: "Status" },
+                            {
+                                data: "", render: function (data, type, row) {
+                                    return '<a href="/CourseManagement/EditCourse?courseID=' + row.CourseID + '" title="編輯"><img style="width:35px" src="../Images/edit.png" /></a> ' +
+                                        '<a href="/CourseManagement/ElectiveCourse?courseID=' + row.CourseID + '" title="已選課名單"><img style="width:35px" src="../Images/elective.png" /></a> ' +
+                                        '<a href="/CourseManagement/DeleteCourse?courseID=' + row.CourseID + '" title="刪除"><img style="width:35px" src="../Images/delete.png" /></a> ';
+                                }
+                            }
+                        ]
+
+                    });
+                }
+            });
+        }
+
+        vm.courseSpeciesChange = function () {
+            if ($scope.courseSpecie == "系所課程") {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseInQuiry/GetSectionDepartment",
+                    data: { courseSpecie: $scope.courseSpecie },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        $scope.sections1 = response.data.sections;
+                        $scope.section1 = "大學部";
+                        $scope.departments1 = response.data.sectionDepartmentCores;
+                        $scope.department1 = response.data.sectionDepartmentCores[0];
+                        $scope.grade1 = 1;
+                        $scope.class1 = "A";
+                    }
+                });
+            }
+            else {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseInQuiry/GetSectionDepartment",
+                    data: { courseSpecie: $scope.courseSpecie },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        $scope.sections2 = response.data.sections;
+                        $scope.section2 = "大學部";
+                        $scope.departments2 = response.data.sectionDepartmentCores;
+                        $scope.department2 = response.data.sectionDepartmentCores[0];
+                        $scope.grade2 = 1;
+                    }
+                });
+            }
+        }
+
+        vm.sectionsChange1 = function () {
+            $http({
+
+                method: 'POST',
+                url: "/CourseInQuiry/GetSections",
+                data: { courseSpecie: $scope.courseSpecie, section: $scope.section1 },
+                dataType: 'json',
+            }).then(function Callback(response) {
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+                    $scope.departments1 = response.data.sectionDepartmentCores;
+                    $scope.department1 = response.data.sectionDepartmentCores[0];
+                    $scope.grade1 = 1;
+                    $scope.class1 = "A";
+
+                }
+            });
+        }
+
+        vm.sectionsChange2 = function () {
+            $http({
+
+                method: 'POST',
+                url: "/CourseInQuiry/GetSections",
+                data: { courseSpecie: $scope.courseSpecie, section: $scope.section2 },
+                dataType: 'json',
+            }).then(function Callback(response) {
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+                    $scope.departments2 = response.data.sectionDepartmentCores;
+                    $scope.department2 = response.data.sectionDepartmentCores[0];
+                    $scope.grade2 = 1;
+                }
+            });
+        }
+
+        vm.search = function () {
+
+            if ($scope.courseSpecie == "系所課程") {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseInQuiry/CourseSearch",
+                    data: { schoolYear: $scope.schoolYear, semester: $scope.semester, courseSpecie: $scope.courseSpecie, section: $scope.section1, department: $scope.department1, grade: $scope.grade1, class1: $scope.class1, status: $scope.status },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        //$scope.courseInQuiryInfos = response.data.courseInQuiryInfos;
+
+                        $("#myDataTalbe").DataTable({
+                            searching: false, //關閉filter功能
+                            data: response.data.courseInQuiryInfos,
+                            order: [[1, "asc"]],
+                            columnDefs: [{
+                                targets: [3],
+                                orderable: false,
+                            }],
+                            destroy: true, //Cannot reinitialise DataTable,解决重新加载表格内容问题,
+                            columns: [
+                                { data: "Subject" },
+                                { data: "SubjectNumber" },
+                                { data: "ClassYear" },
+                                { data: "GradeClass" },
+                                { data: "Instructor" },
+                                {
+                                    data: "", render: function (data, type, row) {
+                                        var yearSemesters = $scope.schoolYear + " " + $scope.semester;
+                                        return '<a target="_blank" href="/CourseInQuiry/Syllabus?yearSemesters=' + yearSemesters + '&courseID=' + row.CourseID
+                                            + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
+                                            + '&requiredElective=' + row.RequiredElective
+                                            + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
+                                            + ' "><img style="width:35px" src="../Images/file.png" /></a>';
+                                    }
+                                },
+                                { data: "Status" },
+                                {
+                                    data: "", render: function (data, type, row) {
+                                        return '<a href="/CourseManagement/EditCourse?courseID=' + row.CourseID + '" title="編輯"><img style="width:35px" src="../Images/edit.png" /></a> ' +
+                                            '<a href="/CourseManagement/ElectiveCourse?courseID=' + row.CourseID + '" title="已選課名單"><img style="width:35px" src="../Images/elective.png" /></a> ' +
+                                            '<a href="/CourseManagement/DeleteCourse?courseID=' + row.CourseID + '" title="刪除"><img style="width:35px" src="../Images/delete.png" /></a> ';
+                                    }
+                                }
+                            ]
+
+                        });
+
+                    }
+                });
+            }
+            else {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseInQuiry/CourseSearch",
+                    data: { schoolYear: $scope.schoolYear, semester: $scope.semester, courseSpecie: $scope.courseSpecie, section: $scope.section2, department: $scope.department2, grade: $scope.grade2, class1: null, status: $scope.status },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        // $scope.courseInQuiryInfos = response.data.courseInQuiryInfos;
+
+                        $("#myDataTalbe").DataTable({
+                            searching: false, //關閉filter功能
+                            data: response.data.courseInQuiryInfos,
+                            order: [[1, "asc"]],
+                            columnDefs: [{
+                                targets: [3],
+                                orderable: false,
+                            }],
+                            destroy: true, //Cannot reinitialise DataTable,解决重新加载表格内容问题,
+                            columns: [
+                                { data: "Subject" },
+                                { data: "SubjectNumber" },
+                                { data: "ClassYear" },
+                                { data: "GradeClass" },
+                                { data: "Instructor" },
+                                {
+                                    data: "", render: function (data, type, row) {
+                                        var yearSemesters = $scope.schoolYear + " " + $scope.semester;
+                                        return '<a target="_blank" href="/CourseInQuiry/Syllabus?yearSemesters=' + yearSemesters + '&courseID=' + row.CourseID
+                                            + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
+                                            + '&requiredElective=' + row.RequiredElective
+                                            + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
+                                            + ' "><img style="width:35px" src="../Images/file.png" /></a>';
+                                    }
+                                },
+                                { data: "Status" },
+                                {
+                                    data: "", render: function (data, type, row) {
+                                        return '<a href="/CourseManagement/EditCourse?courseID=' + row.CourseID + '" title="編輯"><img style="width:35px" src="../Images/edit.png" /></a> ' +
+                                            '<a href="/CourseManagement/ElectiveCourse?courseID=' + row.CourseID + '" title="已選課名單"><img style="width:35px" src="../Images/elective.png" /></a> ' +
+                                            '<a href="/CourseManagement/DeleteCourse?courseID=' + row.CourseID + '" title="刪除"><img style="width:35px" src="../Images/delete.png" /></a> ';
+                                    }
+                                }
+                            ]
+
+                        });
+                    }
+                });
+            }
+        }
+
+
+        //-----------------ADD----------------------------
+        vm.addCourse = function () {
+            $scope.addSchoolYears = [];
+            vm.addSubject = "";
+            vm.addSubjectNumber = "";
+            vm.addCourseDate = new Date();
+            vm.addSignupBeginDate = new Date();
+            vm.addSignupEndDate = new Date();
+            vm.addMinNumber = 0;
+            vm.addMaxNumber = 1;
+            $scope.addCourseSorts = ["系所課程", "共同課程"];
+            $scope.addCourseSort = "系所課程";
+            $scope.addSections1 = $scope.sections1;
+            $scope.addSection1 = "大學部";
+            $scope.addDepartments1 = $scope.departments1;
+            $scope.addDepartment1 = $scope.departments1[0];
+            $scope.addGrades1 = [1, 2, 3, 4];
+            $scope.addGrade1 = 1;
+            $scope.addGrades2 = [1, 2, 3, 4];
+            $scope.addGrade2 = 1;
+            $scope.addClasses1 = ["A", "B", "C"];
+            $scope.addClass1 = "A";
+            $scope.addUserNames = [];
+            $scope.addUserName = "";
+            $scope.addRequiredElectives = ["必修", "選修"];
+            $scope.addRequiredElective = "必修";
+            vm.addCredits = 0;
+            vm.addNumberOfHours = 1;
+            vm.addHoursInternship = 0;
+            $scope.addWeeks = ["一", "二", "三", "四", "五", "六", "日"];
+            $scope.addWeek = "一";
+            vm.addFTime = 0;
+            vm.addETime = 1;
+            $scope.addSchoolNumbers = [];
+            $scope.addSchoolNumber = "";
+            vm.adderrorInfo = "";
+            $scope.isDisabled = 'N';
+
+
+            var mon = new Date().getMonth() + 1;
+            var year = new Date().getFullYear();
+
+
+            for (var i = ((year - 1911) - 1); i <= (year - 1911); i++) {
+                $scope.addSchoolYears.push(i);
+            }
+            //1-7是去年的下學期,8-12是今年的上學期
+            if (8 <= mon && mon <= 12) {
+                $scope.addSchoolYear = year - 1911;
+                $scope.addSemester = "第一學期";
+            }
+            else if (1 <= mon && mon <= 7) {
+                $scope.addSchoolYear = ((year - 1911) - 1);
+                $scope.addSemester = "第二學期";
+            }
+
+            $http({
+
+                method: 'POST',
+                url: "/CourseManagement/GetInfoByAddCourse",
+                data: null,
+                dataType: 'json',
+            }).then(function Callback(response) {
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+                    $scope.addUserNames = response.data.logonId;
+                    $scope.addUserName = response.data.logonId[0];
+                    $scope.addSchoolNumbers = response.data.classroom;
+                    $scope.addSchoolNumber = response.data.classroom[0];
+
+                }
+            });
+
+        }
+
+        vm.addCourseSortsChange = function () {
+            if ($scope.addCourseSort == "系所課程") {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseInQuiry/GetSectionDepartment",
+                    data: { courseSpecie: $scope.addCourseSort },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        $scope.addSections1 = response.data.sections;
+                        $scope.addSection1 = "大學部";
+                        $scope.addDepartments1 = response.data.sectionDepartmentCores;
+                        $scope.addDepartment1 = response.data.sectionDepartmentCores[0];
+                        $scope.addGrade1 = 1;
+                        $scope.addClass1 = "A";
+                    }
+                });
+            }
+            else {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseInQuiry/GetSectionDepartment",
+                    data: { courseSpecie: $scope.addCourseSort },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        $scope.addSections2 = response.data.sections;
+                        $scope.addSection2 = "大學部";
+                        $scope.addDepartments2 = response.data.sectionDepartmentCores;
+                        $scope.addDepartment2 = response.data.sectionDepartmentCores[0];
+                        $scope.addGrade2 = 1;
+                    }
+                });
+            }
+        }
+
+        vm.addSectionsChange1 = function () {
+            $http({
+                method: 'POST',
+                url: "/CourseInQuiry/GetSections",
+                data: { courseSpecie: $scope.addCourseSort, section: $scope.addSection1 },
+                dataType: 'json',
+            }).then(function Callback(response) {
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+                    $scope.addDepartments1 = response.data.sectionDepartmentCores;
+                    $scope.addDepartment1 = response.data.sectionDepartmentCores[0];
+                    $scope.addGrade1 = 1;
+                    $scope.addClass1 = "A";
+
+                }
+            });
+        }
+
+        vm.addSectionsChange2 = function () {
+            $http({
+                method: 'POST',
+                url: "/CourseInQuiry/GetSections",
+                data: { courseSpecie: $scope.addCourseSort, section: $scope.addSection2 },
+                dataType: 'json',
+            }).then(function Callback(response) {
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+                    $scope.addDepartments2 = response.data.sectionDepartmentCores;
+                    $scope.addDepartment2 = response.data.sectionDepartmentCores[0];
+                    $scope.addGrade2 = 1;
+                }
+            });
+        }
+
+        vm.addSave = function () {
+
+
+
+            if (vm.adderrorInfo != "") {
+                document.getElementById(vm.adderrorInfo).style.borderColor = "";
+                $('#addError').html('');
+            }
+
+            if ($scope.addSchoolYear == undefined || $scope.addSemester == "" || $scope.addSemester == undefined
+                || vm.addSubject == "" || vm.addSubject == undefined || vm.addSubjectNumber == "" || vm.addSubjectNumber == undefined
+                || vm.addCourseDate == undefined || vm.addSignupBeginDate == undefined || vm.addSignupEndDate == undefined
+                || vm.addMinNumber == undefined || vm.addMaxNumber == undefined
+                || $scope.addCourseSort == "" || $scope.addCourseSort == undefined 
+                || $scope.addUserName == "" || $scope.addUserName == undefined
+                || $scope.addRequiredElective == "" || $scope.addRequiredElective == undefined || vm.addCredits == undefined
+                || vm.addNumberOfHours == undefined || vm.addHoursInternship == undefined
+                || $scope.addWeek == "" || $scope.addWeek == undefined || vm.addFTime == undefined || vm.addETime == undefined
+                || vm.addObjectives == "" || vm.addObjectives == undefined
+                || vm.addCourseOutline == "" || vm.addCourseOutline == undefined || vm.addTextbooks == "" || vm.addTextbooks == undefined
+                || vm.addReferenceBooks == "" || vm.addReferenceBooks == undefined || vm.addGrading == "" || vm.addGrading == undefined
+                || vm.addSchedule == "" || vm.addSchedule == undefined) {
+                sweetAlert("輸入請勿為空,請再做確認!!!", '', 'error');
+            }
+            else if (vm.addCourseDate <= vm.addSignupEndDate) {
+                sweetAlert("開始上課時間不可小於結束開放選課,請再做確認!!!", '', 'error');
+            }
+            else if (vm.addSignupBeginDate >= vm.addSignupEndDate) {
+                sweetAlert("開始開放選課不可大於結束開放選課,請再做確認!!!", '', 'error');
+            }
+            else if (vm.addNumberOfHours < 1) {
+                sweetAlert("上課時數最低為1,請再做確認!!!", '', 'error');
+            }
+            else if (vm.addFTime < 0 || vm.addFTime > 14 || vm.addETime < 0 || vm.addETime > 14) {
+                sweetAlert("上課節數為0-14,請再做確認!!!", '', 'error');
+            }
+            else if (((vm.addETime - vm.addFTime) + 1) != vm.addNumberOfHours) {
+                sweetAlert("上課時數要跟上課節數數量相同,請再做確認!!!", '', 'error');
+            }
+            else {
+                if ($scope.isDisabled == 'Y') {
+                    return;
+                }
+                $scope.isDisabled = 'Y';
+
+                if ($scope.addCourseSort == "系所課程") {
+                    $http({
+                        method: 'POST',
+                        url: "/CourseManagement/SaveAddInfo",
+                        data: {
+                            addSchoolYear: $scope.addSchoolYear, addSemester: $scope.addSemester,
+                            addSubject: vm.addSubject, addSubjectNumber: vm.addSubjectNumber,
+                            addCourseDate: vm.addCourseDate, addSignupBeginDate: vm.addSignupBeginDate,
+                            addSignupEndDate: vm.addSignupEndDate, addMinNumber: vm.addMinNumber,
+                            addMaxNumber: vm.addMaxNumber, addCourseSort: $scope.addCourseSort,
+                            addSection: $scope.addSection1, addDepartment: $scope.addDepartment1,
+                            addGrade: $scope.addGrade1, addClass: $scope.addClass1, addUserName: $scope.addUserName,
+                            addRequiredElective: $scope.addRequiredElective, addCredits: vm.addCredits,
+                            addNumberOfHours: vm.addNumberOfHours, addHoursInternship: vm.addHoursInternship,
+                            addWeek: $scope.addWeek, addFTime: vm.addFTime, addETime: vm.addETime,
+                            addSchoolNumber: $scope.addSchoolNumber, addObjectives: vm.addObjectives,
+                            addCourseOutline: vm.addCourseOutline, addTextbooks: vm.addTextbooks,
+                            addReferenceBooks: vm.addReferenceBooks, addGrading: vm.addGrading, addSchedule: vm.addSchedule
+                        },
+                        dataType: 'json',
+                    }).then(function Callback(response) {
+                        $scope.isDisabled = 'N';
+
+                        if (response.data.error == false) {
+
+                            if (response.data.errorInfo != "") {
+                                vm.adderrorInfo = response.data.errorInfo;
+                                document.getElementById(response.data.errorInfo).style.borderColor = "#FF0000";
+                                $('#addError').html('<span style="color:red">' + response.data.message + '</span>');
+                            }
+                            else {
+                                sweetAlert(response.data.message, '', 'error');
+                            }
+
+                        }
+                        else {
+
+                            $scope.addSchoolYears = [];
+                            vm.addSubject = "";
+                            vm.addSubjectNumber = "";
+                            vm.addCourseDate = new Date();
+                            vm.addSignupBeginDate = new Date();
+                            vm.addSignupEndDate = new Date();
+                            vm.addMinNumber = 0;
+                            vm.addMaxNumber = 1;
+                            vm.addCourseSort = "系所課程";
+                            $scope.addSection1 = "大學部";
+                            vm.addDepartment1 = $scope.departments1[0];
+                            $scope.addGrade1 = 1;
+                            $scope.addGrade2 = 1;
+                            $scope.addClass1 = "A";
+                            $scope.addUserNames = [];
+                            $scope.addUserName = "";
+                            $scope.addRequiredElective = "必修";
+                            vm.addCredits = 0;
+                            vm.addNumberOfHours = 1;
+                            vm.addHoursInternship = 0;
+                            $scope.addWeeks = ["一", "二", "三", "四", "五", "六", "日"];
+                            $scope.addWeek = "一";
+                            vm.addFTime = 0;
+                            vm.addETime = 1;
+                            $scope.addSchoolNumbers = [];
+                            $scope.addSchoolNumber = "";
+
+                            //SweetAlert2的寫法
+                            //swal({
+                            //    title: response.data.message,
+                            //    type: 'success',
+                            //})
+                            //    .then((res) => {
+                            //        $("#addCourseModal").modal('hide');
+                            //        window.location.reload();
+                            //    }, function (dismiss) {
+                            //        // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
+                            //        $("#addCourseModal").modal('hide');
+                            //        window.location.reload();
+                            //    });
+
+                            swal({
+                                title: response.data.message,
+                                type: "success",
+                            },
+                                function (inputValue) {
+                                    if (inputValue === false) {
+                                        $("#addCourseModal").modal('hide');
+                                        window.location.reload();
+                                    } else {
+                                        $("#addCourseModal").modal('hide');
+                                        window.location.reload();
+                                    }
+                                });
+
+                        }
+                    });
+                }
+                else if ($scope.addCourseSort == "共同課程") {
+                    $http({
+                        method: 'POST',
+                        url: "/CourseManagement/SaveAddInfo",
+                        data: {
+                            addSchoolYear: $scope.addSchoolYear, addSemester: $scope.addSemester,
+                            addSubject: vm.addSubject, addSubjectNumber: vm.addSubjectNumber,
+                            addCourseDate: vm.addCourseDate, addSignupBeginDate: vm.addSignupBeginDate,
+                            addSignupEndDate: vm.addSignupEndDate, addMinNumber: vm.addMinNumber,
+                            addMaxNumber: vm.addMaxNumber, addCourseSort: $scope.addCourseSort,
+                            addSection: $scope.addSection2, addDepartment: $scope.addDepartment2,
+                            addGrade: $scope.addGrade2, addClass: null, addUserName: $scope.addUserName,
+                            addRequiredElective: $scope.addRequiredElective, addCredits: vm.addCredits,
+                            addNumberOfHours: vm.addNumberOfHours, addHoursInternship: vm.addHoursInternship,
+                            addWeek: $scope.addWeek, addFTime: vm.addFTime, addETime: vm.addETime,
+                            addSchoolNumber: $scope.addSchoolNumber, addObjectives: vm.addObjectives,
+                            addCourseOutline: vm.addCourseOutline, addTextbooks: vm.addTextbooks,
+                            addReferenceBooks: vm.addReferenceBooks, addGrading: vm.addGrading,
+                            addSchedule: vm.addSchedule
+                        },
+                        dataType: 'json',
+                    }).then(function Callback(response) {
+                        if (response.data.error == false) {
+                            if (response.data.errorInfo != "") {
+                                vm.adderrorInfo = response.data.errorInfo;
+                                document.getElementById(response.data.errorInfo).style.borderColor = "#FF0000";
+                                $('#addError').html('<span style="color:red">' + response.data.message + '</span>');
+                            }
+                            else {
+                                sweetAlert(response.data.message, '', 'error');
+                            }
+                        }
+                        else {
+                            vm.addSchedule = response.data.addObjective;
+
+                            $scope.addSchoolYears = [];
+                            vm.addSubject = "";
+                            vm.addSubjectNumber = "";
+                            vm.addCourseDate = new Date();
+                            vm.addSignupBeginDate = new Date();
+                            vm.addSignupEndDate = new Date();
+                            vm.addMinNumber = 0;
+                            vm.addMaxNumber = 1;
+                            vm.addCourseSort = "系所課程";
+                            $scope.addSection2 = "大學部";
+                            $scope.addGrade2 = 1;
+                            $scope.addClass2 = "A";
+                            $scope.addUserNames = [];
+                            $scope.addUserName = "";
+                            $scope.addRequiredElective = "必修";
+                            vm.addCredits = 0;
+                            vm.addNumberOfHours = 1;
+                            vm.addHoursInternship = 0;
+                            $scope.addWeeks = ["一", "二", "三", "四", "五", "六", "日"];
+                            $scope.addWeek = "一";
+                            vm.addFTime = 0;
+                            vm.addETime = 1;
+                            $scope.addSchoolNumbers = [];
+                            $scope.addSchoolNumber = "";
+
+                            //SweetAlert2的寫法
+                            //swal({
+                            //    title: response.data.message,
+                            //    type: 'success',
+                            //})
+                            //    .then((res) => {
+                            //        $("#addCourseModal").modal('hide');
+                            //        window.location.reload();
+                            //    }, function (dismiss) {
+                            //        // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
+                            //        $("#addCourseModal").modal('hide');
+                            //        window.location.reload();
+                            //    });
+
+
+                            swal({
+                                title: response.data.message,
+                                type: "success",
+                            },
+                                function (inputValue) {
+                                    if (inputValue === false) {
+                                        $("#addCourseModal").modal('hide');
+                                        window.location.reload();
+                                    } else {
+                                        $("#addCourseModal").modal('hide');
+                                        window.location.reload();
+                                    }
+                                });
+
+                        }
+                    });
+
+                }
+            }
+
+
+
+
+
+
+        }
+        //----------------------------------------------------------
+
+        initial();
     }]);
 </script>

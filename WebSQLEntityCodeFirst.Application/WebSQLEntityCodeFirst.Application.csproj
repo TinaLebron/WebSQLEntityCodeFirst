@@ -50,13 +50,25 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\NewsServices.cs" />
     <Compile Include="Services\PermissionsServices.cs" />
     <Compile Include="Services\ApplicationUserServices.cs" />
     <Compile Include="ViewModels\ApplicationUserDto.cs" />
     <Compile Include="ViewModels\CourseDto.cs" />
+    <Compile Include="ViewModels\CourseInQuiryInfos.cs" />
+    <Compile Include="ViewModels\CourseListsByCartsByCourseWork.cs" />
+    <Compile Include="ViewModels\CourseListsByCourseWork.cs" />
+    <Compile Include="ViewModels\CourseTimeQuiryDto.cs" />
+    <Compile Include="ViewModels\CourseToUserSchedulesDto.cs" />
+    <Compile Include="ViewModels\ElectiveCourseListDto.cs" />
     <Compile Include="ViewModels\ElectiveDto.cs" />
+    <Compile Include="ViewModels\GetCourseTimePerSemester.cs" />
+    <Compile Include="ViewModels\GetStudentsListToElectiveCourse.cs" />
+    <Compile Include="ViewModels\Home.cs" />
     <Compile Include="ViewModels\PermissionsDto.cs" />
+    <Compile Include="ViewModels\SectionDepartmentList.cs" />
     <Compile Include="ViewModels\StudentDto.cs" />
+    <Compile Include="ViewModels\UserSchedulesDto.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

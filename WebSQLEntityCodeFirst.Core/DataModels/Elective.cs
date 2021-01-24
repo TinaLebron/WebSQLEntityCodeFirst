@@ -22,7 +22,7 @@ namespace WebSQLEntityCodeFirst.Core.DataModels
 
         public virtual Course Course { get; set; } //課程
         public virtual Student Student { get; set; }
-        public virtual IList<ElectiveLog> ElectiveLog { get; set; }
+        //public virtual IList<ElectiveLog> ElectiveLog { get; set; }
         
     }
 }

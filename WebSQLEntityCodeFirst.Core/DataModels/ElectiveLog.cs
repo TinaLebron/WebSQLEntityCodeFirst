@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebSQLEntityCodeFirst.Core.Enums;
 
 namespace WebSQLEntityCodeFirst.Core.DataModels
 {
@@ -15,19 +16,19 @@ namespace WebSQLEntityCodeFirst.Core.DataModels
         public string Remarks { get; set; }
         public int CreatedUserId { get; set; } //建立者
         public DateTime? CreateDate { get; set; } //建立時間
-        public int? ClassTimeId { get; set; }
-        public int? ClassroomId { get; set; }
+        public int StartingSchoolYear { get; set; } //開課學年
+        public Semester Semester { get; set; } //開課學期
+        [Required]
+        public int Credits { get; set; } //學分
         public int? CourseId { get; set; }
         public string LogonId { get; set; } // 只有學號(帳號)
         public int? StudentId { get; set; }
         public int ElectiveId { get; set; }
 
-
-        public virtual ClassTime ClassTime { get; set; } 
-        public virtual Classroom Classroom { get; set; } 
+        
         public virtual Course Course { get; set; } //課程
         public virtual Student Student { get; set; }
-        public virtual Elective Elective { get; set; }
+        //public virtual Elective Elective { get; set; }
 
     }
 }

@@ -1,0 +1,337 @@
+﻿@{
+    ViewBag.Title = "EditCourse";
+
+    var account = "";
+    if (Session["sIDNo"] == null || string.IsNullOrWhiteSpace(Session["sIDNo"].ToString()))
+    {
+        Response.Redirect("../Home/Index");
+    }
+    else
+    {
+        account = Session["sIDNo"].ToString();
+    }
+
+    //沒使用_ViewStart就要自訂Layout位置
+    //Layout = "~/Views/Shared/_UserInfoLayout.cshtml";
+
+    <link rel="stylesheet" href="~/Content/jquery.dataTables.min.css" />
+    <script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/ui-bootstrap/ui-bootstrap-tpls-2.5.0.min.js"></script>
+    <script src="~/Scripts/SweetAlert/sweetalert.min.js"></script>
+    <link href="~/Content/SweetAlert/sweetalert.css" rel="stylesheet" />
+    <script src="~/Scripts/SweetAlert/sweetalert-dev.min.js"></script>
+    <script src="~/Scripts/SweetAlert/promise.min.js"></script>
+}
+
+<br />
+<div class="form-horizontal" ng-app="app">
+    <div ng-controller="EditCourse as vm">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="editCourseModalLabel">
+                    <label class="control-label">編輯</label>
+                </h4>
+
+            </div>
+            <div class="modal-body">
+                <div>
+                    <ul id="myTab" class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#info" data-toggle="tab">
+                                開課資訊
+                            </a>
+                        </li>
+                        <li><a href="#course" data-toggle="tab">課程大綱</a></li>
+                    </ul>
+                    <div id="myTabContent" class="tab-content">
+                        <div class="tab-pane fade in active" id="info">
+                            <br />
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">學年</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editSchoolYear}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">學期</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editSemester}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">課程名稱</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editSubject}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">開課碼</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editSubjectNumber}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">開始上課時間</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editCourseDate}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">開始開放選課</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editSignupBeginDate}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">結束開放選課</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editSignupEndDate}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">最低人數</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editMinNumber}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">最高人數</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editMaxNumber}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">課程類別</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editCourseSort}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">部別</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editSection}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">科系</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editDepartment}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">年級</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editGrade}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-show="addCourseSort === '系所課程'">
+                                <label class="control-label col-md-2" for="Name">班級</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editClass}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">授課教師代碼</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editUserName}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">必修/選修</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editRequiredElective}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">學分</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editCredits}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">上課時數</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editNumberOfHours}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">實習時數</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editHoursInternship}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">上課地點</label>
+                                <div class="col-md-10">
+                                    <h5>{{vm.editSchoolNumber}}</h5>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2" for="Name">上課時間</label>
+                                <div class="col-md-10">
+                                    <h5>星期{{vm.editWeek}} 第{{vm.editFTime}}節 到 第{{vm.editETime}}節</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="course">
+                            <br />
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">授課目標</label>
+                                <div class="col-md-10" id="">
+                                    <textarea id="editObjectives" style="height: 500px;" class="form-control">@Html.Raw(ViewBag.editObjectives)</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">授課大綱</label>
+                                <div class="col-md-10" id="">
+                                    <textarea id="editCourseOutline" style="height: 300px;" class="form-control">@Html.Raw(ViewBag.editCourseOutline)</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">教科書</label>
+                                <div class="col-md-10" id="">
+                                    <textarea id="editTextbooks" style="height: 300px;" class="form-control">@Html.Raw(ViewBag.editTextbooks)</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">參考書籍</label>
+                                <div class="col-md-10" id="">
+                                    <textarea id="editReferenceBooks" style="height: 300px;" class="form-control">@Html.Raw(ViewBag.editReferenceBooks)</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">成績考核準則</label>
+                                <div class="col-md-10" id="">
+                                    <textarea id="editGrading" style="height: 300px;" class="form-control">@Html.Raw(ViewBag.editGrading)</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label">授課進度</label>
+                                <div class="col-md-10" id="">
+                                    <textarea id="editSchedule" style="height: 1000px;" class="form-control">@Html.Raw(ViewBag.editSchedule)</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+                <div style="text-align: left" id="editError"></div>
+                <button type="button" class="btn btn-secondary" ng-click="vm.editClose()" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" ng-click="vm.editSave()">確定</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+    var appModule = angular.module('app', ['ui.bootstrap']);
+    appModule.controller('EditCourse', ['$scope', '$http', function ($scope, $http) {
+        var vm = this;
+        $scope.isDisabled = 'N';
+        vm.courseID = @ViewBag.courseID;
+
+
+        vm.editSchoolYear = @ViewBag.editSchoolYear;
+        vm.editSemester = "@ViewBag.editSemester";
+        vm.editSubject = "@ViewBag.editSubject";
+        vm.editSubjectNumber = "@ViewBag.editSubjectNumber";
+        vm.editCourseDate = "@ViewBag.editCourseDate";
+        vm.editSignupBeginDate = "@ViewBag.editSignupBeginDate";
+        vm.editSignupEndDate = "@ViewBag.editSignupEndDate";
+        vm.editMinNumber = @ViewBag.editMinNumber;
+        vm.editMaxNumber = @ViewBag.editMaxNumber;
+        vm.editCourseSort = "@ViewBag.editCourseSort";
+        vm.editSection = "@ViewBag.editSection";
+        vm.editDepartment = "@ViewBag.editDepartment";
+        vm.editGrade = @ViewBag.editGrade;
+        vm.editClass = "@ViewBag.editClass";
+        vm.editUserName = "@ViewBag.editUserName";
+        vm.editRequiredElective = "@ViewBag.editRequiredElective";
+        vm.editCredits = @ViewBag.editCredits;
+        vm.editNumberOfHours = @ViewBag.editNumberOfHours;
+        vm.editHoursInternship = @ViewBag.editHoursInternship;
+        vm.editWeek = "@ViewBag.editWeek";
+        vm.editFTime = @ViewBag.editFTime;
+        vm.editETime = @ViewBag.editETime;
+        vm.editSchoolNumber = "@ViewBag.editSchoolNumber";
+
+
+        vm.editClose = function () {
+
+            window.location = '/CourseManagementToTeacher/Index';
+        }
+
+        vm.editSave = function () {
+
+            if ($('#editObjectives').val() == "" || $('#editObjectives').val() == undefined
+                || $('#editCourseOutline').val() == "" || $('#editCourseOutline').val() == undefined || $('#editTextbooks').val() == "" || $('#editTextbooks').val() == undefined
+                || $('#editReferenceBooks').val() == "" || $('#editReferenceBooks').val() == undefined || $('#editGrading').val() == "" || $('#editGrading').val() == undefined
+                || $('#editSchedule').val() == "" || $('#editSchedule').val() == undefined) {
+                sweetAlert("輸入請勿為空,請再做確認!!!", '', 'error');
+            }
+            else {
+                if ($scope.isDisabled == 'Y') {
+                    return;
+                }
+                $scope.isDisabled = 'Y';
+
+                $http({
+                    method: 'POST',
+                    url: "/CourseManagementToTeacher/SaveEditInfo",
+                    data: {
+                        editObjectives: $('#editObjectives').val(),
+                        editCourseOutline: $('#editCourseOutline').val(), editTextbooks: $('#editTextbooks').val(),
+                        editReferenceBooks: $('#editReferenceBooks').val(), editGrading: $('#editGrading').val(),
+                        editSchedule: $('#editSchedule').val(), courseID: vm.courseID
+                    },
+                    dataType: 'json',
+                }).then(function Callback(response) {
+                    $scope.isDisabled = 'N';
+
+                    if (response.data.error == false) {
+
+                        sweetAlert(response.data.message, '', 'error');
+
+                    }
+                    else {
+                        //SweetAlert2的寫法
+                        //swal({
+                        //    title: response.data.message,
+                        //    type: 'success',
+                        //})
+                        //    .then((res) => {
+                        //        window.location = '/CourseManagementToTeacher/Index';
+                        //    }, function (dismiss) {
+                        //        // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
+                        //        window.location = '/CourseManagementToTeacher/Index';
+                        //    });
+
+                        swal({
+                            title: response.data.message,
+                            type: "success",
+                        },
+                            function (inputValue) {
+                                if (inputValue === false) {
+                                    window.location = '/CourseManagementToTeacher/Index';
+                                } else {
+                                    window.location = '/CourseManagementToTeacher/Index';
+                                }
+                            });
+
+                    }
+                });
+            }
+
+        }
+
+
+
+    }]);
+</script>

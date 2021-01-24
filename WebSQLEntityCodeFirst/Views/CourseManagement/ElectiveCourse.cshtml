@@ -1,0 +1,359 @@
+﻿@{
+    ViewBag.Title = "ElectiveCourse";
+
+    var account = "";
+    if (Session["sIDNo"] == null || string.IsNullOrWhiteSpace(Session["sIDNo"].ToString()))
+    {
+        Response.Redirect("../Home/Index");
+    }
+    else
+    {
+        account = Session["sIDNo"].ToString();
+    }
+
+    //沒使用_ViewStart就要自訂Layout位置
+    //Layout = "~/Views/Shared/_UserInfoLayout.cshtml";
+
+    <link rel="stylesheet" href="~/Content/jquery.dataTables.min.css" />
+    <script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/ui-bootstrap/ui-bootstrap-tpls-2.5.0.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/multiselect.min/multiselect.min.js"></script>
+    <script src="~/Scripts/SweetAlert/sweetalert.min.js"></script>
+    <link href="~/Content/SweetAlert/sweetalert.css" rel="stylesheet" />
+    <script src="~/Scripts/SweetAlert/sweetalert-dev.min.js"></script>
+}
+
+<style>
+    .panel-primary {
+        border-color: #337ab7 !important;
+    }
+
+    .panel {
+        margin-bottom: 8px;
+        background-color: #fff;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    }
+
+    .panel-primary > .panel-heading {
+        color: #fff;
+        background-color: #337ab7;
+        border-color: #337ab7;
+    }
+
+    .panel-heading {
+        padding: 10px 15px;
+        border-bottom: 1px solid transparent;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+    }
+
+    .panel-body {
+        padding: 15px;
+    }
+
+    .form-controlCustom {
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    }
+</style>
+
+<br />
+<div class="form-horizontal" ng-app="app">
+    <div ng-controller="ElectiveCourse as vm">
+        <div class="panel panel-primary">
+            <div class="panel-heading" style="font-size:18px;font-weight:800;">
+                <img style="width:18px;margin-right:8px" src="../Images/search.png" />
+                &nbsp;選課清單
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-12" style="line-height:35px">
+                    <input type="text" autocomplete=off ng-model="vm.logonId" class="form-controlCustom" placeholder="搜尋學號" />
+                    <button type="button" class="btn btn-primary" ng-click="vm.search()">搜尋</button>
+                </div>
+            </div>
+        </div>
+        <!-- Button trigger modal -->
+
+        <a href="" title="加入選課" ng-click="vm.addElective()" data-toggle="modal" data-target="#addCourseModal"><img style="width:35px" src="../Images/add.png" /></a>
+        <br /><br />
+
+        <!-- Main content -->
+        <section class="content container-fluid">
+            <div class="box">
+                <div>
+
+                    <table class="table table-striped table-hover" id="myDataTalbe">
+                        <thead>
+                            <tr>
+                                <th width="100px">順位<br><span style="font-size:0.9em">Order</span></th>
+                                <th width="100px">科目代碼<br><span style="font-size:0.9em">Subject Number</span></th>
+                                <th width="50px">系級<br><span style="font-size:0.9em">class</span></th>
+                                <th width="110px">學號<br><span style="font-size:0.9em">Class Year</span></th>
+                                <th width="110px"></th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th width="100px">順位<br><span style="font-size:0.9em">Order</span></th>
+                                <th width="100px">科目代碼<br><span style="font-size:0.9em">Subject Number</span></th>
+                                <th width="50px">系級<br><span style="font-size:0.9em">class</span></th>
+                                <th width="110px">學號<br><span style="font-size:0.9em">LogonId</span></th>
+                                <th width="110px"></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!--ADD Modal -->
+        <div class="modal fade" id="addCourseModal" tabindex="-1" role="dialog" aria-labelledby="addCourseModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="addCourseModalLabel">
+                            <label class="control-label">加入選課</label>
+                        </h4>
+
+                    </div><br />
+                    <div class="row">
+                        <div class="col-sm-5">
+                            學生未選入清單<br />
+                            <select name="from" id="optgroup" style="height: 450px;" class="form-control" size="8" multiple="multiple">
+
+                                <optgroup label="{{studentsList.DepartmentAbbreviation}}" ng-repeat="studentsList in studentsLists">
+                                    <option value="{{studentsInfo.LogonId}}" ng-repeat="studentsInfo in studentsList.StudentsInfos">{{studentsInfo.ClassLogonId}}</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <button type="button" id="optgroup_rightAll" class="btn btn-block"><i class="glyphicon glyphicon-forward"></i></button>
+                            <button type="button" id="optgroup_rightSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-right"></i></button>
+                            <button type="button" id="optgroup_leftSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-left"></i></button>
+                            <button type="button" id="optgroup_leftAll" class="btn btn-block"><i class="glyphicon glyphicon-backward"></i></button>
+                        </div>
+
+                        <div class="col-sm-5">
+                            學生加入課程清單<br />
+                            <select name="to" id="optgroup_to" style="height: 450px;" class="form-control" size="8" multiple="multiple"></select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div style="text-align: left" id="editError"></div>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" ng-click="vm.addSave()">確定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+
+<script type="text/javascript">
+
+    var appModule = angular.module('app', ['ui.bootstrap']);
+    appModule.controller('ElectiveCourse', ['$scope', '$http', function ($scope, $http) {
+        var vm = this;
+        $scope.isDisabled = 'N';
+
+        vm.logonId = "";
+        vm.courseID = @ViewBag.courseID;
+        $scope.studentsLists = {};
+        vm.electiveCourseList = {};
+
+
+
+        function initial() {
+            $http({
+
+                method: 'POST',
+                url: "/CourseManagement/GetElectiveListInitial",
+                data: { courseID: vm.courseID },
+                dataType: 'json',
+
+            }).then(function Callback(response) {
+
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+                    vm.electiveCourseList = response.data.electiveCourseList;
+                    $("#myDataTalbe").DataTable({
+                        searching: false, //關閉filter功能
+                        data: response.data.electiveCourseList,
+                        order: [[1, "asc"]],
+                        columnDefs: [{
+                            targets: [3],
+                            orderable: false,
+                        }],
+                        destroy: true, //Cannot reinitialise DataTable,解决重新加载表格内容问题,
+                        columns: [
+                            { data: "Number" },
+                            { data: "SubjectNumber" },
+                            { data: "UserClass" },
+                            { data: "StudentLogonId" },
+                            {
+                                data: "", render: function (data, type, row) {
+                                    return '<a href="/CourseManagement/DeleteElectiveCourseList?electivesID=' + row.ElectivesID + ' &studentLogonId=' + row.StudentLogonId + ' &subjectNumber=' + row.SubjectNumber + ' &courseID=' + row.CourseID +'" title="刪除"><img style="width:35px" src="../Images/delete.png" /></a> ';
+                                }
+                            }
+                        ]
+
+                    });
+                }
+            });
+        }
+
+        vm.search = function () {
+
+            $http({
+
+                method: 'POST',
+                url: "/CourseManagement/ElectiveListSearch",
+                data: { courseID: vm.courseID, logonId: vm.logonId, electiveCourseList: vm.electiveCourseList },
+                dataType: 'json',
+
+            }).then(function Callback(response) {
+
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+
+                    $("#myDataTalbe").DataTable({
+                        searching: false, //關閉filter功能
+                        data: response.data.electiveCourseList,
+                        order: [[1, "asc"]],
+                        columnDefs: [{
+                            targets: [3],
+                            orderable: false,
+                        }],
+                        destroy: true, //Cannot reinitialise DataTable,解决重新加载表格内容问题,
+                        columns: [
+                            { data: "Number" },
+                            { data: "SubjectNumber" },
+                            { data: "UserClass" },
+                            { data: "StudentLogonId" },
+                            {
+                                data: "", render: function (data, type, row) {
+                                    return '<a href="/CourseManagement/DeleteElectiveCourseList?electivesID=' + row.ElectivesID + ' &studentLogonId=' + row.StudentLogonId + ' &subjectNumber=' + row.SubjectNumber + ' &courseID=' + row.CourseID + '" title="刪除"><img style="width:35px" src="../Images/delete.png" /></a> ';
+                                }
+                            }
+                        ]
+
+                    });
+
+                }
+            });
+        }
+
+
+        //-----------------ADD----------------------------
+        vm.addElective = function () {
+
+            $('#optgroup').multiselect({
+                search: {
+                    left: '<input type="text" name="q" class="form-control" autocomplete= off placeholder="搜尋學號..." />',
+                    right: '<input type="text" name="q" class="form-control" autocomplete= off placeholder="搜尋學號..." />',
+                },
+                fireSearch: function (value) {
+                    return value.length > 0;
+                }
+            });
+
+            $scope.studentsLists = {};
+            $('#optgroup_to').empty();
+
+            $http({
+
+                method: 'POST',
+                url: "/CourseManagement/GetStudentsListToElectiveCourse",
+                data: { courseID: vm.courseID },
+                dataType: 'json',
+            }).then(function Callback(response) {
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+                    $scope.studentsLists = response.data.studentsLists;
+                }
+            });
+
+        }
+
+
+        vm.addSave = function () {
+            var studentsLogonIdOption = [];
+
+            $('#optgroup_to optgroup option').each(function () {
+                var optionValue = $(this).val();
+                studentsLogonIdOption.push(optionValue);
+            });
+
+            if (studentsLogonIdOption.length == 0) {
+                sweetAlert("請選擇學生選課!!!", '', 'error');
+            }
+            else {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseManagement/SaveAddElectiveCourseList",
+                    data: { courseID: vm.courseID, studentsLogonIdOption: studentsLogonIdOption },
+                    dataType: 'json',
+                }).then(function Callback(response) {
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        //SweetAlert2的寫法
+                        //swal({
+                        //    title: response.data.message,
+                        //    type: 'success',
+                        //})
+                        //    .then((res) => {
+                        //        window.location = '/CourseManagement/ElectiveCourse?courseID=' + vm.courseID;
+                        //    }, function (dismiss) {
+                        //        // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
+                        //        window.location = '/CourseManagement/ElectiveCourse?courseID=' + vm.courseID;
+                        //    });
+
+                        swal({
+                            title: response.data.message,
+                            type: "success",
+                        },
+                            function (inputValue) {
+                                if (inputValue === false) {
+                                    window.location = '/CourseManagement/ElectiveCourse?courseID=' + vm.courseID;
+                                } else {
+                                    window.location = '/CourseManagement/ElectiveCourse?courseID=' + vm.courseID;
+                                }
+                            });
+                    }
+                });
+            }
+
+        }
+        //----------------------------------------------------------
+
+        initial();
+    }]);
+</script>

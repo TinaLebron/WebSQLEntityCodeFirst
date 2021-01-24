@@ -10,7 +10,6 @@ namespace WebSQLEntityCodeFirst.Application.ViewModels
 {
     public class ElectiveDto
     {
-        [Key]
         public int EnrollmentID { get; set; }
         public int CourseID { get; set; }
         public int StudentID { get; set; }

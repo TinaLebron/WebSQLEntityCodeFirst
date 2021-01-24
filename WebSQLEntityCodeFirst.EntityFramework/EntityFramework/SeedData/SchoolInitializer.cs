@@ -23,6 +23,7 @@ namespace WebSQLEntityCodeFirst.EntityFramework.EntityFramework.SeedData
             //CreateSchoolInitializer();
         }
 
-        
+       
+
     }
 }

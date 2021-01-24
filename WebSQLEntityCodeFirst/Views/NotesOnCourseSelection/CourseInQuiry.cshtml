@@ -1,0 +1,402 @@
+﻿@{
+    ViewBag.Title = "CourseInQuiry";
+
+
+}
+<link rel="stylesheet" href="~/Content/jquery.dataTables.min.css" />
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<style>
+    .panel-primary {
+        border-color: #337ab7 !important;
+    }
+
+    .panel {
+        margin-bottom: 8px;
+        background-color: #fff;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    }
+
+    .panel-primary > .panel-heading {
+        color: #fff;
+        background-color: #337ab7;
+        border-color: #337ab7;
+    }
+
+    .panel-heading {
+        padding: 10px 15px;
+        border-bottom: 1px solid transparent;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+    }
+
+    .panel-body {
+        padding: 15px;
+    }
+
+    .form-controlCustom {
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    }
+</style>
+
+
+<br />
+<div class="form-horizontal" ng-app="app">
+    <div ng-controller="CourseInQuiry as vm">
+        <div class="panel panel-primary">
+            <div class="panel-heading" style="font-size:18px;font-weight:800;">
+                <img style="width:18px;margin-right:8px" src="../Images/search.png" />
+                &nbsp;課程查詢
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-12" style="line-height:35px">
+                    <select ng-model="schoolYear" ng-options=" member for member in schoolYears" class="form-controlCustom "></select>
+                    <select ng-model="semester" ng-options=" member for member in semesters" class="form-controlCustom "></select>
+                    <select ng-model="courseSpecie" ng-options=" member for member in courseSpecies" ng-change="vm.courseSpeciesChange()" class="form-controlCustom"></select>
+                    <select ng-show="courseSpecie === '系所課程'" ng-model="section1" ng-options=" member for member in sections1" ng-change="vm.sectionsChange1()" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '共同課程'" ng-model="section2" ng-options=" member for member in sections2" ng-change="vm.sectionsChange2()" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '系所課程'" ng-model="department1" ng-options=" member for member in departments1" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '共同課程'" ng-model="department2" ng-options=" member for member in departments2" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '系所課程'" ng-model="grade1" ng-options=" member for member in grades1" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '共同課程'" ng-model="grade2" ng-options=" member for member in grades2" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '系所課程'" ng-model="class1" ng-options=" member for member in classes" class="form-controlCustom "></select>
+                    <button type="button" class="btn btn-primary" ng-click="vm.search()">搜尋</button>
+                </div>
+            </div>
+        </div>
+        <!-- Main content -->
+        <section class="content container-fluid">
+            <div class="box">
+                <div>
+                    <table class="table table-striped table-hover" id="myDataTalbe">
+                        <thead>
+                            <tr>
+                                <th width="100px">課名<br><span style="font-size:0.9em">Course title</span></th>
+                                <th width="50px">開課碼<br><span style="font-size:0.9em">Course<br>Number</span></th>
+                                <th width="35px">學分<br><span style="font-size:0.9em">Credits</span></th>
+                                <th width="110px">開課學年<br><span style="font-size:0.9em">Class Year</span></th>
+                                <th width="110px">開課系級<br><span style="font-size:0.9em">Grade &amp; Class</span></th>
+                                <th width="35px">選必修<br><span style="font-size:0.8em">Required<br>/ Elective</span></th>
+                                <th width="200px">時間地點<br><span style="font-size:0.9em">Time and location</span></th>
+                                <th width="60px">教師<br><span style="font-size:0.9em">Instructor</span></th>
+                                <th width="33px">課綱<br><span style="font-size:0.9em">Syllabus</span></th>
+                                <th width="33px">人數上限<br><span style="font-size:0.9em">Syllabus</span></th>
+                                <th width="33px">目前人數<br><span style="font-size:0.9em">Syllabus</span></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+
+        </section>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    var appModule = angular.module('app', []);
+    appModule.controller('CourseInQuiry', ['$scope', '$http', function ($scope, $http) {
+        var vm = this;
+
+        // options
+        $scope.schoolYears = [];
+        $scope.semesters = ["第一學期", "第二學期"];
+        $scope.courseSpecies = ["系所課程", "共同課程"];
+        $scope.courseSpecie = "系所課程";
+        $scope.grades1 = [1, 2, 3, 4];
+        $scope.grade1 = 1;
+        $scope.grades2 = [1, 2, 3, 4];
+        $scope.grade2 = 1;
+        $scope.classes = ["A", "B", "C"];
+        $scope.class1 = "A";
+        $scope.sections1 = [];
+        $scope.section1 = "大學部";
+        $scope.sections2 = [];
+        $scope.section2 = "大學部";
+        $scope.departments1 = [];
+        $scope.department1 = "";
+        $scope.departments2 = [];
+        $scope.department2 = "";
+
+
+        function initial() {
+            $http({
+
+                method: 'POST',
+                url: "/CourseInQuiry/GetSectionDepartmentInitial",
+                data: { courseSpecie: $scope.courseSpecie, status: null },
+                dataType: 'json',
+
+            }).then(function Callback(response) {
+
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+                    for (var i = 90; i <= response.data.schoolYear; i++) {
+                        //從2011開始
+                        $scope.schoolYears.push(i);
+                    }
+
+                    $scope.schoolYear = response.data.schoolYear;
+                    $scope.semester = response.data.semester;
+                    $scope.sections1 = response.data.sections;
+                    $scope.departments1 = response.data.sectionDepartmentCores;
+                    $scope.department1 = response.data.sectionDepartmentCores[0];
+
+                    $("#myDataTalbe").DataTable({
+                        searching: false, //關閉filter功能
+                        data: response.data.courseInQuiryInfos,
+                        order: [[1, "asc"]],
+                        columnDefs: [{
+                            targets: [3],
+                            orderable: false,
+                        }],
+                        destroy: true, //Cannot reinitialise DataTable,解决重新加载表格内容问题,
+                        columns: [
+                            { data: "Subject" },
+                            { data: "SubjectNumber" },
+                            { data: "Credits" },
+                            { data: "ClassYear" },
+                            { data: "GradeClass" },
+                            { data: "RequiredElective" },
+                            { data: "TimeLocation" },
+                            { data: "Instructor" },
+                            {
+                                data: "", render: function (data, type, row) {
+                                    var yearSemesters = $scope.schoolYear + " " + $scope.semester;
+                                    return '<a target="_blank" href="/NotesOnCourseSelection/Syllabus?yearSemesters=' + yearSemesters + '&courseID=' + row.CourseID
+                                        + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
+                                        + '&requiredElective=' + row.RequiredElective
+                                        + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
+                                        + ' "><img style="width:35px" src="../Images/file.png" /></a>';
+                                }
+                            },
+                            { data: "MaximumNum" },
+                            { data: "CurrentNum" }
+                        ]
+
+                    });
+                }
+            });
+        }
+
+        vm.courseSpeciesChange = function () {
+            if ($scope.courseSpecie == "系所課程") {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseInQuiry/GetSectionDepartment",
+                    data: { courseSpecie: $scope.courseSpecie },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        $scope.sections1 = response.data.sections;
+                        $scope.section1 = "大學部";
+                        $scope.departments1 = response.data.sectionDepartmentCores;
+                        $scope.department1 = response.data.sectionDepartmentCores[0];
+                        $scope.grade1 = 1;
+                        $scope.class1 = "A";
+                    }
+                });
+            }
+            else {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseInQuiry/GetSectionDepartment",
+                    data: { courseSpecie: $scope.courseSpecie },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        $scope.sections2 = response.data.sections;
+                        $scope.section2 = "大學部";
+                        $scope.departments2 = response.data.sectionDepartmentCores;
+                        $scope.department2 = response.data.sectionDepartmentCores[0];
+                        $scope.grade2 = 1;
+                    }
+                });
+            }
+        }
+
+        vm.sectionsChange1 = function () {
+            $http({
+
+                method: 'POST',
+                url: "/CourseInQuiry/GetSections",
+                data: { courseSpecie: $scope.courseSpecie, section: $scope.section1 },
+                dataType: 'json',
+            }).then(function Callback(response) {
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+                    $scope.departments1 = response.data.sectionDepartmentCores;
+                    $scope.department1 = response.data.sectionDepartmentCores[0];
+                    $scope.grade1 = 1;
+                    $scope.class1 = "A";
+
+                }
+            });
+        }
+
+        vm.sectionsChange2 = function () {
+            $http({
+
+                method: 'POST',
+                url: "/CourseInQuiry/GetSections",
+                data: { courseSpecie: $scope.courseSpecie, section: $scope.section2 },
+                dataType: 'json',
+            }).then(function Callback(response) {
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+                    $scope.departments2 = response.data.sectionDepartmentCores;
+                    $scope.department2 = response.data.sectionDepartmentCores[0];
+                    $scope.grade2 = 1;
+                }
+            });
+        }
+
+        vm.search = function () {
+
+            if ($scope.courseSpecie == "系所課程") {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseInQuiry/CourseSearch",
+                    data: { schoolYear: $scope.schoolYear, semester: $scope.semester, courseSpecie: $scope.courseSpecie, section: $scope.section1, department: $scope.department1, grade: $scope.grade1, class1: $scope.class1, status: null },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+
+                        $("#myDataTalbe").DataTable({
+                            searching: false, //關閉filter功能
+                            data: response.data.courseInQuiryInfos,
+                            order: [[1, "asc"]],
+                            columnDefs: [{
+                                targets: [3],
+                                orderable: false,
+                            }],
+                            destroy: true, //Cannot reinitialise DataTable,解决重新加载表格内容问题,
+                            columns: [
+                                { data: "Subject" },
+                                { data: "SubjectNumber" },
+                                { data: "Credits" },
+                                { data: "ClassYear" },
+                                { data: "GradeClass" },
+                                { data: "RequiredElective" },
+                                { data: "TimeLocation" },
+                                { data: "Instructor" },
+                                {
+                                    data: "", render: function (data, type, row) {
+                                        var yearSemesters = $scope.schoolYear + " " + $scope.semester;
+                                        return '<a target="_blank" href="/NotesOnCourseSelection/Syllabus?yearSemesters=' + yearSemesters + '&courseID=' + row.CourseID
+                                            + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
+                                            + '&requiredElective=' + row.RequiredElective
+                                            + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
+                                            + ' "><img style="width:35px" src="../Images/file.png" /></a>';
+                                    }
+                                },
+                                { data: "MaximumNum" },
+                                { data: "CurrentNum" }
+                            ]
+
+                        });
+
+                    }
+                });
+            }
+            else {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseInQuiry/CourseSearch",
+                    data: { schoolYear: $scope.schoolYear, semester: $scope.semester, courseSpecie: $scope.courseSpecie, section: $scope.section2, department: $scope.department2, grade: $scope.grade2, class1: null, status: null },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        // $scope.courseInQuiryInfos = response.data.courseInQuiryInfos;
+
+                        $("#myDataTalbe").DataTable({
+                            searching: false, //關閉filter功能
+                            data: response.data.courseInQuiryInfos,
+                            order: [[1, "asc"]],
+                            columnDefs: [{
+                                targets: [3],
+                                orderable: false,
+                            }],
+                            destroy: true, //Cannot reinitialise DataTable,解决重新加载表格内容问题,
+                            columns: [
+                                { data: "Subject" },
+                                { data: "SubjectNumber" },
+                                { data: "Credits" },
+                                { data: "ClassYear" },
+                                { data: "GradeClass" },
+                                { data: "RequiredElective" },
+                                { data: "TimeLocation" },
+                                { data: "Instructor" },
+                                {
+                                    data: "", render: function (data, type, row) {
+                                        var yearSemesters = $scope.schoolYear + " " + $scope.semester;
+                                        return '<a target="_blank" href="/NotesOnCourseSelection/Syllabus?yearSemesters=' + yearSemesters + '&courseID=' + row.CourseID
+                                            + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
+                                            + '&requiredElective=' + row.RequiredElective
+                                            + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
+                                            + ' "><img style="width:35px" src="../Images/file.png" /></a>';
+                                    }
+                                },
+                                { data: "MaximumNum" },
+                                { data: "CurrentNum" }
+                            ]
+
+                        });
+                    }
+                });
+            }
+        }
+
+
+        initial();
+
+    }]);
+</script>
+

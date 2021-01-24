@@ -1,0 +1,176 @@
+﻿@{
+    ViewBag.Title = "EditCourseTime";
+
+    var account = "";
+    if (Session["sIDNo"] == null || string.IsNullOrWhiteSpace(Session["sIDNo"].ToString()))
+    {
+        Response.Redirect("../Home/Index");
+    }
+    else
+    {
+        account = Session["sIDNo"].ToString();
+    }
+
+    //沒使用_ViewStart就要自訂Layout位置
+    //Layout = "~/Views/Shared/_UserInfoLayout.cshtml";
+
+    <link rel="stylesheet" href="~/Content/jquery.dataTables.min.css" />
+    <script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/ui-bootstrap/ui-bootstrap-tpls-2.5.0.min.js"></script>
+    <script src="~/Scripts/SweetAlert/sweetalert.min.js"></script>
+    <link href="~/Content/SweetAlert/sweetalert.css" rel="stylesheet" />
+    <script src="~/Scripts/SweetAlert/sweetalert-dev.min.js"></script>
+}
+
+<br />
+<div class="form-horizontal" ng-app="app">
+    <div ng-controller="EditCourseTime as vm">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="editCourseModalLabel">
+                    <label class="control-label">編輯</label>
+                </h4>
+
+            </div>
+            <div class="modal-body">
+                <div class="tab-pane fade in active" id="info">
+                    <br />
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">學年</label>
+                        <div class="col-md-10" id="">
+                            <select ng-model="editSchoolYear" ng-options=" member for member in editSchoolYears" class="form-control "></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">學期</label>
+                        <div class="col-md-10" id="">
+                            <select ng-model="editSemester" ng-options=" member for member in editSemesters" class="form-control "></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">部別</label>
+                        <div class="col-md-10" id="">
+                            <select ng-model="editSection" ng-options=" member for member in editSections" ng-change="vm.editSectionsChange()" class="form-control "></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">年級</label>
+                        <div class="col-md-10" id="">
+                            <select ng-model="editGrade" ng-options=" member for member in editGrades" class="form-control "></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">開始開放選課</label>
+                        <div class="col-md-10" id="">
+                            <input type="datetime-local" placeholder="YYY-MM-dd HH:mm" size="16" ng-model="vm.editSignupBeginDate" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">結束開放選課</label>
+                        <div class="col-md-10" id="">
+                            <input type="datetime-local" placeholder="YYY-MM-dd HH:mm" size="16" ng-model="vm.editSignupEndDate" />
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+
+                <div style="text-align: left" id="editError"></div>
+                <button type="button" class="btn btn-secondary" ng-click="vm.editClose()" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" ng-click="vm.editSave()">確定</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+    var appModule = angular.module('app', ['ui.bootstrap']);
+    appModule.controller('EditCourseTime', ['$scope', '$http', function ($scope, $http) {
+        var vm = this;
+        $scope.isDisabled = 'N';
+        vm.courseTimePerSemesterID = @ViewBag.courseTimePerSemesterID;
+
+
+        //edit
+        var year = new Date().getFullYear();
+        $scope.editSchoolYears = [];
+
+        for (var i = (2011 - 1911); i <= (year - 1911); i++) {
+            $scope.editSchoolYears.push(i);
+        }
+        $scope.editSchoolYear = @ViewBag.editSchoolYear;
+        $scope.editSemesters = ["第一學期", "第二學期"];
+        $scope.editSemester = "@ViewBag.editSemester";
+        vm.editSignupBeginDate = new Date("@ViewBag.editSignupBeginDate");
+        vm.editSignupEndDate = new Date("@ViewBag.editSignupEndDate");
+        $scope.editSections = @Html.Raw(Json.Encode(@ViewBag.editSections));
+        $scope.editSection = "@ViewBag.editSection";
+        $scope.editGrades = [1, 2, 3, 4];
+        $scope.editGrade = @ViewBag.editGrade;
+
+
+        vm.editClose = function () {
+
+            window.location = '/CourseTimePerSemester/Index';
+        }
+
+        vm.editSave = function () {
+
+            if ($scope.editSchoolYear == undefined || $scope.editSemester == "" || $scope.editSemester == undefined
+                || vm.editSignupBeginDate == undefined || vm.editSignupEndDate == undefined) {
+                sweetAlert("輸入請勿為空,請再做確認!!!", '', 'error');
+            }
+            else if (vm.editCourseDate <= vm.editSignupEndDate) {
+                sweetAlert("開始上課時間不可小於結束開放選課,請再做確認!!!", '', 'error');
+            }
+            else if (vm.editSignupBeginDate >= vm.editSignupEndDate) {
+                sweetAlert("開始開放選課不可大於結束開放選課,請再做確認!!!", '', 'error');
+            }
+            else {
+                $http({
+                    method: 'POST',
+                    url: "/CourseTimePerSemester/SaveEditInfo",
+                    data: {
+                        courseTimePerSemesterID: vm.courseTimePerSemesterID,
+                        editSchoolYear: $scope.editSchoolYear, editSemester: $scope.editSemester,
+                        editSignupBeginDate: vm.editSignupBeginDate,
+                        editSignupEndDate: vm.editSignupEndDate, editSection: $scope.editSection,
+                        editGrade: $scope.editGrade
+                    },
+                    dataType: 'json',
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+
+                        swal({
+                            title: response.data.message,
+                            type: "success",
+                        },
+                            function (inputValue) {
+                                if (inputValue === false) {
+                                    window.location = '/CourseTimePerSemester/Index';
+                                } else {
+                                    window.location = '/CourseTimePerSemester/Index';
+                                }
+                            });
+
+                    }
+                });
+
+            }
+
+        }
+
+
+
+    }]);
+</script>

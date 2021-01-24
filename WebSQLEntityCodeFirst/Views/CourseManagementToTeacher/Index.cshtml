@@ -1,0 +1,393 @@
+﻿@{
+    ViewBag.Title = "CourseManagementToTeacher";
+
+    var account = "";
+    if (Session["sIDNo"] == null || string.IsNullOrWhiteSpace(Session["sIDNo"].ToString()))
+    {
+        Response.Redirect("../Home/Index");
+    }
+    else
+    {
+        account = Session["sIDNo"].ToString();
+    }
+
+    //沒使用_ViewStart就要自訂Layout位置
+    //Layout = "~/Views/Shared/_UserInfoLayout.cshtml";
+
+    <link rel="stylesheet" href="~/Content/jquery.dataTables.min.css" />
+    <script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/ui-bootstrap/ui-bootstrap-tpls-2.5.0.min.js"></script>
+}
+
+<style>
+    .panel-primary {
+        border-color: #337ab7 !important;
+    }
+
+    .panel {
+        margin-bottom: 8px;
+        background-color: #fff;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    }
+
+    .panel-primary > .panel-heading {
+        color: #fff;
+        background-color: #337ab7;
+        border-color: #337ab7;
+    }
+
+    .panel-heading {
+        padding: 10px 15px;
+        border-bottom: 1px solid transparent;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+    }
+
+    .panel-body {
+        padding: 15px;
+    }
+
+    .form-controlCustom {
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    }
+</style>
+
+<br />
+<div class="form-horizontal" ng-app="app">
+    <div ng-controller="CourseManagementToTeacher as vm">
+        <div class="panel panel-primary">
+            <div class="panel-heading" style="font-size:18px;font-weight:800;">
+                <img style="width:18px;margin-right:8px" src="../Images/search.png" />
+                &nbsp;{{vm.user}}-導師選課後台
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-12" style="line-height:35px">
+                    <select ng-model="schoolYear" ng-options=" member for member in schoolYears" class="form-controlCustom "></select>
+                    <select ng-model="semester" ng-options=" member for member in semesters" class="form-controlCustom "></select>
+                    <select ng-model="courseSpecie" ng-options=" member for member in courseSpecies" ng-change="vm.courseSpeciesChange()" class="form-controlCustom"></select>
+                    <select ng-show="courseSpecie === '系所課程'" ng-model="section1" ng-options=" member for member in sections1" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '共同課程'" ng-model="section2" ng-options=" member for member in sections2" class="form-controlCustom "></select>
+                    <select ng-model="status" ng-options=" member for member in statuses" class="form-controlCustom "></select>
+                    <button type="button" class="btn btn-primary" ng-click="vm.search()">搜尋</button>
+                </div>
+            </div>
+        </div>
+        <!-- Main content -->
+        <section class="content container-fluid">
+            <div class="box">
+                <div>
+
+                    <table class="table table-striped table-hover" id="myDataTalbe">
+                        <thead>
+                            <tr>
+                                <th width="100px">課名<br><span style="font-size:0.9em">Course title</span></th>
+                                <th width="50px">開課碼<br><span style="font-size:0.9em">Course<br>Number</span></th>
+                                <th width="110px">開課學年<br><span style="font-size:0.9em">Class Year</span></th>
+                                <th width="110px">開課系級<br><span style="font-size:0.9em">Grade &amp; Class</span></th>
+                                <th width="60px">教師<br><span style="font-size:0.9em">Instructor</span></th>
+                                <th width="33px">課綱<br><span style="font-size:0.9em">Syllabus</span></th>
+                                <th width="33px">狀態<br><span style="font-size:0.9em">Status</span></th>
+                                <th width="110px"></th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th width="100px">課名<br><span style="font-size:0.9em">Course title</span></th>
+                                <th width="50px">開課碼<br><span style="font-size:0.9em">Course<br>Number</span></th>
+                                <th width="110px">開課學年<br><span style="font-size:0.9em">Class Year</span></th>
+                                <th width="110px">開課系級<br><span style="font-size:0.9em">Grade &amp; Class</span></th>
+                                <th width="60px">教師<br><span style="font-size:0.9em">Instructor</span></th>
+                                <th width="33px">課綱<br><span style="font-size:0.9em">Syllabus</span></th>
+                                <th width="33px">狀態<br><span style="font-size:0.9em">Status</span></th>
+                                <th width="110px"></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var appModule = angular.module('app', []);
+    appModule.controller('CourseManagementToTeacher', ['$scope', '$http', function ($scope, $http) {
+        var vm = this;
+        $scope.isDisabled = 'N';
+        vm.user = "@Session["sIDNo"].ToString()";
+
+        //
+        $scope.schoolYears = [];
+        $scope.semesters = ["第一學期", "第二學期"];
+        $scope.courseSpecies = ["系所課程", "共同課程"];
+        $scope.courseSpecie = "系所課程";
+        $scope.sections1 = [];
+        $scope.section1 = "大學部";
+        $scope.sections2 = [];
+        $scope.section2 = "大學部";
+        $scope.statuses = ["未開始", "進行中", "已結束"];
+        $scope.status = "未開始";
+
+        //Add
+        $scope.addSchoolYears = [];
+        $scope.addSemesters = ["第一學期", "第二學期"];
+        vm.addSubject = "";
+        vm.addSubjectNumber = "";
+        vm.addCourseDate = new Date();
+        vm.addSignupBeginDate = new Date();
+        vm.addSignupEndDate = new Date();
+        vm.addMinNumber = 0;
+        vm.addMaxNumber = 1;
+        vm.addCourseSort = "系所課程";
+        vm.addSection = "大學部";
+        vm.addDepartment = "";
+        vm.addGrade1 = 1;
+        vm.addClass1 = "A";
+        vm.addUserName = "";
+        vm.addRequiredElective = "必修";
+        vm.addCredits = 0;
+        vm.addNumberOfHours = 1;
+        vm.addHoursInternship = 0;
+        vm.addWeek = "一";
+        vm.addFTime = 0;
+        vm.addETime = 1;
+        vm.addSchoolNumber = "";
+        vm.adderrorInfo = "";
+
+        function initial() {
+            $http({
+
+                method: 'POST',
+                url: "/CourseManagementToTeacher/GetSectionDepartmentInitial",
+                data: { courseSpecie: $scope.courseSpecie, status: $scope.status },
+                dataType: 'json',
+
+            }).then(function Callback(response) {
+
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+                    for (var i = 90; i <= response.data.schoolYear; i++) {
+                        //從2011開始
+                        $scope.schoolYears.push(i);
+                    }
+
+                    $scope.schoolYear = response.data.schoolYear;
+                    $scope.semester = response.data.semester;
+                    $scope.sections1 = response.data.sections;
+
+                    $("#myDataTalbe").DataTable({
+                        searching: false, //關閉filter功能
+                        data: response.data.courseInQuiryInfos,
+                        order: [[1, "asc"]],
+                        columnDefs: [{
+                            targets: [3],
+                            orderable: false,
+                        }],
+                        destroy: true, //Cannot reinitialise DataTable,解决重新加载表格内容问题,
+                        columns: [
+                            { data: "Subject" },
+                            { data: "SubjectNumber" },
+                            { data: "ClassYear" },
+                            { data: "GradeClass" },
+                            { data: "Instructor" },
+                            {
+                                data: "", render: function (data, type, row) {
+                                    var yearSemesters = $scope.schoolYear + " " + $scope.semester;
+                                    return '<a target="_blank" href="/CourseInQuiry/Syllabus?yearSemesters=' + yearSemesters + '&courseID=' + row.CourseID
+                                        + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
+                                        + '&requiredElective=' + row.RequiredElective
+                                        + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
+                                        + ' "><img style="width:40px" src="../Images/file.png" /></a>';
+                                }
+                            },
+                            { data: "Status" },
+                            {
+                                data: "", render: function (data, type, row) {
+                                    return '<a href="/CourseManagementToTeacher/EditCourse?courseID=' + row.CourseID + '" title="編輯"><img style="width:40px" src="../Images/edit.png" /></a> ' +
+                                        '<a href="/CourseManagement/ElectiveCourse?courseID=' + row.CourseID + '" title="已選課名單"><img style="width:40px" src="../Images/elective.png" /></a> ';
+                                }
+                            }
+                        ]
+
+                    });
+                }
+            });
+        }
+
+        vm.courseSpeciesChange = function () {
+            if ($scope.courseSpecie == "系所課程") {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseInQuiry/GetSectionDepartment",
+                    data: { courseSpecie: $scope.courseSpecie },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        $scope.sections1 = response.data.sections;
+                        $scope.section1 = "大學部";
+                    }
+                });
+            }
+            else {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseInQuiry/GetSectionDepartment",
+                    data: { courseSpecie: $scope.courseSpecie },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        $scope.sections2 = response.data.sections;
+                        $scope.section2 = "大學部";
+                    }
+                });
+            }
+        }
+
+        vm.search = function () {
+
+            if ($scope.courseSpecie == "系所課程") {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseManagementToTeacher/CourseSearch",
+                    data: { schoolYear: $scope.schoolYear, semester: $scope.semester, courseSpecie: $scope.courseSpecie, section: $scope.section1, status: $scope.status },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        //$scope.courseInQuiryInfos = response.data.courseInQuiryInfos;
+
+                        $("#myDataTalbe").DataTable({
+                            searching: false, //關閉filter功能
+                            data: response.data.courseInQuiryInfos,
+                            order: [[1, "asc"]],
+                            columnDefs: [{
+                                targets: [3],
+                                orderable: false,
+                            }],
+                            destroy: true, //Cannot reinitialise DataTable,解决重新加载表格内容问题,
+                            columns: [
+                                { data: "Subject" },
+                                { data: "SubjectNumber" },
+                                { data: "ClassYear" },
+                                { data: "GradeClass" },
+                                { data: "Instructor" },
+                                {
+                                    data: "", render: function (data, type, row) {
+                                        var yearSemesters = $scope.schoolYear + " " + $scope.semester;
+                                        return '<a target="_blank" href="/CourseInQuiry/Syllabus?yearSemesters=' + yearSemesters + '&courseID=' + row.CourseID
+                                            + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
+                                            + '&requiredElective=' + row.RequiredElective
+                                            + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
+                                            + ' "><img style="width:40px" src="../Images/file.png" /></a>';
+                                    }
+                                },
+                                { data: "Status" },
+                                {
+                                    data: "", render: function (data, type, row) {
+                                        return '<a href="/CourseManagementToTeacher/EditCourse?courseID=' + row.CourseID + '" title="編輯"><img style="width:40px" src="../Images/edit.png" /></a> ' +
+                                            '<a href="/CourseManagement/ElectiveCourse?courseID=' + row.CourseID + '" title="已選課名單"><img style="width:40px" src="../Images/elective.png" /></a> ';
+                                    }
+                                }
+                            ]
+
+                        });
+
+                    }
+                });
+            }
+            else {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseManagementToTeacher/CourseSearch",
+                    data: { schoolYear: $scope.schoolYear, semester: $scope.semester, courseSpecie: $scope.courseSpecie, section: $scope.section2, status: $scope.status },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        // $scope.courseInQuiryInfos = response.data.courseInQuiryInfos;
+
+                        $("#myDataTalbe").DataTable({
+                            searching: false, //關閉filter功能
+                            data: response.data.courseInQuiryInfos,
+                            order: [[1, "asc"]],
+                            columnDefs: [{
+                                targets: [3],
+                                orderable: false,
+                            }],
+                            destroy: true, //Cannot reinitialise DataTable,解决重新加载表格内容问题,
+                            columns: [
+                                { data: "Subject" },
+                                { data: "SubjectNumber" },
+                                { data: "ClassYear" },
+                                { data: "GradeClass" },
+                                { data: "Instructor" },
+                                {
+                                    data: "", render: function (data, type, row) {
+                                        var yearSemesters = $scope.schoolYear + " " + $scope.semester;
+                                        return '<a target="_blank" href="/CourseInQuiry/Syllabus?yearSemesters=' + yearSemesters + '&courseID=' + row.CourseID
+                                            + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
+                                            + '&requiredElective=' + row.RequiredElective
+                                            + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
+                                            + ' "><img style="width:40px" src="../Images/file.png" /></a>';
+                                    }
+                                },
+                                { data: "Status" },
+                                {
+                                    data: "", render: function (data, type, row) {
+                                        return '<a href="/CourseManagementToTeacher/EditCourse?courseID=' + row.CourseID + '" title="編輯"><img style="width:40px" src="../Images/edit.png" /></a> ' +
+                                            '<a href="/CourseManagement/ElectiveCourse?courseID=' + row.CourseID + '" title="已選課名單"><img style="width:40px" src="../Images/elective.png" /></a> ';
+                                    }
+                                }
+                            ]
+
+                        });
+                    }
+                });
+            }
+        }
+
+        initial();
+
+    }]);
+</script>

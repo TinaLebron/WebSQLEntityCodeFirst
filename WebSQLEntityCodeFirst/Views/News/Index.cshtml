@@ -17,20 +17,51 @@
 }
 
 
+<style>
+    .alph-list__title {
+        font-size: 2.375em;
+        font-weight: 300;
+        position: relative;
+        color: #333;
+        padding: 0 0 0.15789474em;
+    }
+
+        .alph-list__title::before {
+            position: absolute;
+            z-index: 3;
+            bottom: 0;
+            left: 0;
+            width: 1.875rem;
+            height: 3px;
+            content: "";
+            background: #A02337;
+        }
+
+    .alph-list__alph {
+        font-size: 2.63157895em;
+        font-weight: 400;
+        line-height: 1;
+        text-indent: -0.05263158em;
+    }
+
+    .alph-list__title::after {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 2px;
+        content: "";
+        background: #D5D5D5;
+    }
+
+</style>
+
 <br />
 <div class="form-horizontal" ng-app="app">
     <div ng-controller="News as vm">
-        <h4>Basic Information</h4>
-        <hr />
-        依本校學則規定，各階段之選課結束後，立即將「衝堂之科目概予註銷」， 並公告於註冊課務組首頁與簡訊通知，請同學留意，勿選課衝堂。 重複修讀已取得學分之科目，其學分數不予承認。
-        大四生下學期下修一至三年級、通識與語文等課程需上滿十八週，方可畢業。
-        研究所一、二年級最低應修一門課程，其他選課上下限學分數依各研究所之規定，相關問題請洽各系所辦公室。
-        延修生、進修學士班、EMBA學分費收費以實際選課時數計算，其後因故辨理棄選者仍要繳費，請審慎選課。
-        101學年度(含)以前入學者適用：一般延修生(含日間部及碩士班一般生)選課9學分(含)以下者，以學分時數收費；選課在10學分(含)以上者，以本系所全額學雜費收取。
-        102學年度(含)以後入學者適用：一般延修生(含日間部及碩士班一般生)選課以學分時數收費；每人每學期收取雜費4,500元。
-        變更密碼請至學生系統- http://stweb.cjcu.edu.tw
-        確保資料正確，請勿同時在同一電腦上開啟多畫面多人選課。
-        上網選課請遵守本校各選課規定，並參閱相關注意事項內容辦理。
+        <p class="alph-list__title"><span class="alph-list__alph"></span>@ViewBag.Subject</p>
+        <br />
+        @Html.Raw(ViewBag.HomeContents)
 
     </div>
 </div>

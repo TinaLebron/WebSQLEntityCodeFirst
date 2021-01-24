@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "CourseTimeQuiry";
+
+
+}
+<link rel="stylesheet" href="~/Content/jquery.dataTables.min.css" />
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+
+<style>
+    p {
+        margin: revert !important;
+    }
+    td, th {
+        padding: 10px !important;
+    }
+</style>
+
+<br />
+<div class="form-horizontal" ng-app="app">
+    <div ng-controller="CourseTimeQuiry as vm">
+        <div class="col-xs-12 padded-t10">
+            <p style="text-align: center;">{{schoolYear}}學年度{{semester}}開放時間(至{{SignupEndDate}}截止)</p>
+            <div style="display: flex;flex-wrap: wrap;justify-content: center">
+                <table border="1" cellpadding="1" cellspacing="1">
+                    <tbody>
+                        <tr>
+                            <td>各學制</td>
+                            <td>選課時間(以下年級為預升年級)</td>
+                        </tr>
+                        <tr ng-repeat="courseTimePerSemester in courseTimePerSemesters">
+                            <td>{{courseTimePerSemester.SchoolSystem}}</td>
+                            <td>
+                                <p>
+                                    <div ng-repeat="CourseTime in courseTimePerSemester.CourseTimeList">
+                                        {{CourseTime.CourseTimeString}}
+                                    </div><br/>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>其他規定</td>
+                            <td>
+                                <p>
+                                    休學後之復學生與國際交換生，依據各年級選課時間表
+                                </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+
+            <p style="text-align: center;">※如有關選課問題：請洽註冊課務組O小姐(分機XXX)</p>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    var appModule = angular.module('app', []);
+    appModule.controller('CourseTimeQuiry', ['$scope', '$http', function ($scope, $http) {
+        var vm = this;
+
+        $scope.schoolYear = @ViewBag.editSchoolYear;
+        $scope.semester = "@ViewBag.semester";
+        $scope.SignupEndDate = "@ViewBag.SignupEndDate";
+        $scope.courseTimePerSemesters = @Html.Raw(Json.Encode(@ViewBag.editSections));
+
+
+    }]);
+</script>
+

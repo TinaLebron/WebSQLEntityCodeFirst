@@ -6,34 +6,48 @@
     <div ng-controller="Home as vm">
         @*<h3>@ViewBag.Message</h3>
         {{vm.total}}*@
-        <div class="col-sm-4">
-
-        </div>
-        <div class="login-box col-sm-2">
-            <div class="form-inline col-md-12" role="form">
-                <div>
-                    <label for="user_login">Student ID</label><br />
-                    <input class="form-control top" ng-model="vm.sIDNo" autofocus="autofocus" autocapitalize="off" autocorrect="off" data-qa-selector="login_field" type="text" id="user_login">
-                </div>
-                <div>
-                    <label for="user_password">Password</label>
-                    <input class="form-control bottom" ng-model="vm.password" id="user_password" type="password">
-                </div>
-                <div>
-                    <label for="rememberMe">
-                        <input type="checkbox" id="rememberMe" ng-model="vm.rememberMe" value="true">
-                        <span>Remember me</span>
-                    </label>
-                </div>
-                <div></div>
-                <div>
-                    <input type="submit" value="Sign in" class="btn btn-success" style="width: 100%;" ng-click="vm.singIn()">
-                </div>
-                <div align="center" style="border-top: outset;">
-                    <a href="javascript:void(0);" ng-click="vm.forgot()">Forgot your password?</a>
+        <div class="row" style="justify-content: center">
+            <div class="login-box1 col-sm-6" style="height:450px;width: 500px;">
+                <ul class="small">
+                    <li>
+                        <h4><span class="text-danger"><b><a target="_blank" href="/NotesOnCourseSelection/CourseInQuiry">課程查詢</a></b></span></h4>
+                    </li>
+                    <li><h4><b><a target="_blank" href="/NotesOnCourseSelection/CourseTimeQuiry">各年級初選時間請見</a></b></h4></li>
+                    <li><h4>研究所一、二年級最低應修一門課程，其他選課上下限學分數依各研究所之規定，相關問題請洽各系所辦公室。</h4></li>
+                </ul>
+            </div>
+            <div class="login-box2 col-sm-6" style="height:450px;width: 500px;">
+                <div class="p-5">
+                    <div class="text-center">
+                        <h1 class="h4 text-gray-900 mb-4">學生系統</h1>
+                    </div>
+                    <form class="user">
+                        <div class="form-group">
+                            <input type="text" class="form-control form-control-user"  ng-model="vm.sIDNo" autocapitalize="off" autocorrect="off" placeholder="學號">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="密碼" ng-model="vm.password">
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox small">
+                                <input type="checkbox" class="custom-control-input" id="customCheck" ng-model="vm.rememberMe" value="true">
+                                <label class="custom-control-label" for="customCheck">
+                                   記住我
+                                </label>
+                            </div>
+                        </div>
+                        <a href="javascript:void(0);" class="btn btn-primary btn-user btn-block" ng-click="vm.singIn()" >
+                            登入
+                        </a>
+                    </form>
+                    <hr>
+                    <div class="text-center">
+                        <a class="small" href="javascript:void(0);" ng-click="vm.forgot()">忘記密碼?</a>
+                    </div>
                 </div>
             </div>
         </div>
+        
 
     </div>
 </div>
@@ -46,17 +60,57 @@
 
 
 <style>
-    .login-box {
-        box-shadow: 0 0 0 1px #dbdbdb;
+    .login-box1 {
+        box-shadow: 0 0 0 1px #fff;
         border-bottom-right-radius: 0.25rem;
         border-bottom-left-radius: 0.25rem;
         padding: 15px;
         width: 320px;
+        background-color: #dbdbdb;
+    }
+
+    .login-box2 {
+        box-shadow: 0 0 0 1px #fff;
+        border-bottom-right-radius: 0.25rem;
+        border-bottom-left-radius: 0.25rem;
+        padding: 15px;
+        width: 320px;
+        background-color: #ffffff;
     }
 
     .float-right {
         float: right !important;
     }
+
+    .row {
+        display: flex !important;
+        flex-wrap: wrap !important;
+    }
+
+    body {
+        background-color: #f4f4f4 !important;
+    }
+
+    form.user .form-control-user {
+        font-size: .8rem;
+        border-radius: 10rem;
+        padding: 1.5rem 1rem;
+    }
+    .custom-control-label::after {
+        position: absolute;
+        top: .25rem;
+        left: -1.5rem;
+        display: block;
+        width: 1rem;
+        height: 1rem;
+        content: "";
+        background: no-repeat 50%/50% 50%;
+    }
+
+    input, select, textarea {
+        max-width: 100% !important;
+    }
+
 </style>
 
 <script type="text/javascript">
@@ -210,7 +264,7 @@
 
                 
             }
-
+            
 
         }]);
 

@@ -1,0 +1,124 @@
+﻿@{
+    /**/
+
+    ViewBag.Title = "DeleteElectiveCourseList";
+
+    var account = "";
+    if (Session["sIDNo"] == null || string.IsNullOrWhiteSpace(Session["sIDNo"].ToString()))
+    {
+        Response.Redirect("../Home/Index");
+    }
+    else
+    {
+        account = Session["sIDNo"].ToString();
+    }
+
+    //沒使用_ViewStart就要自訂Layout位置
+    //Layout = "~/Views/Shared/_UserInfoLayout.cshtml";
+
+    <link rel="stylesheet" href="~/Content/jquery.dataTables.min.css" />
+    <script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/ui-bootstrap/ui-bootstrap-tpls-2.5.0.min.js"></script>
+    <script src="~/Scripts/SweetAlert/sweetalert.min.js"></script>
+    <link href="~/Content/SweetAlert/sweetalert.css" rel="stylesheet" />
+    <script src="~/Scripts/SweetAlert/sweetalert-dev.min.js"></script>
+}
+
+<br />
+<div class="form-horizontal" ng-app="app">
+    <div ng-controller="DeleteElectiveCourseList as vm">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="editCourseModalLabel">
+                    <label class="control-label">刪除</label>
+                </h4>
+
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <h4 style="text-align:center;">@Html.Raw(ViewBag.content)</h4>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-5 control-label">取消原因</label>
+                    <div class="col-md-5" id="">
+                        <textarea style="height: 250px;" ng-model="vm.remarks" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+                <div style="text-align: left" id="editError"></div>
+                <button type="button" class="btn btn-secondary" ng-click="vm.editClose()" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" ng-click="vm.editSave()">確定</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+    var appModule = angular.module('app', ['ui.bootstrap']);
+    appModule.controller('DeleteElectiveCourseList', ['$scope', '$http', function ($scope, $http) {
+        var vm = this;
+        $scope.isDisabled = 'N';
+        vm.electivesID = @ViewBag.electivesID;
+        vm.studentLogonId = "@ViewBag.studentLogonId";
+        vm.courseID = @ViewBag.courseID;
+        vm.remarks = "";
+
+        vm.editClose = function () {
+
+            window.location = '/CourseManagement/ElectiveCourse?courseID=' + vm.courseID;
+        }
+
+        vm.editSave = function () {
+            if (vm.remarks == "" || vm.remarks == undefined) {
+                sweetAlert("輸入請勿為空,請再做確認!!!", '', 'error');
+            } else {
+
+                $http({
+                    method: 'POST',
+                    url: "/CourseManagement/SaveDeleteElectiveList",
+                    data: { electivesID: vm.electivesID, studentLogonId: vm.studentLogonId, remarks: vm.remarks },
+                    dataType: 'json',
+                }).then(function Callback(response) {
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        //SweetAlert2的寫法
+                        //swal({
+                        //    title: response.data.message,
+                        //    type: 'success',
+                        //})
+                        //    .then((res) => {
+                        //        window.location = '/CourseManagement/ElectiveCourse?courseID=' + vm.courseID;
+                        //    }, function (dismiss) {
+                        //        // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
+                        //        window.location = '/CourseManagement/ElectiveCourse?courseID=' + vm.courseID;
+                        //    });
+
+                        swal({
+                            title: response.data.message,
+                            type: "success",
+                        },
+                            function (inputValue) {
+                                if (inputValue === false) {
+                                    window.location = '/CourseManagement/ElectiveCourse?courseID=' + vm.courseID;
+                                } else {
+                                    window.location = '/CourseManagement/ElectiveCourse?courseID=' + vm.courseID;
+                                }
+                            });
+                    }
+                });
+            }
+
+        }
+
+
+    }]);
+</script>

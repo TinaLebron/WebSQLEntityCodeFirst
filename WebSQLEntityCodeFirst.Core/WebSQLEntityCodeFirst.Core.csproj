@@ -66,6 +66,7 @@
     <Compile Include="DataModels\CourseDescription.cs" />
     <Compile Include="DataModels\CourseLog.cs" />
     <Compile Include="DataModels\CourseStatus.cs" />
+    <Compile Include="DataModels\CourseTimePerSemester.cs" />
     <Compile Include="DataModels\Elective.cs" />
     <Compile Include="DataModels\ElectiveLog.cs" />
     <Compile Include="DataModels\Employee.cs" />

@@ -16,12 +16,70 @@
 
 }
 
+<link href="~/Scripts/summernote/summernote.css" rel="stylesheet" />
+<script src="~/Scripts/summernote/summernote.js"></script>
+<script src="~/Scripts/SweetAlert/promise.min.js"></script>
+<script src="~/Scripts/SweetAlert/sweetalert.min.js"></script>
+<link href="~/Content/SweetAlert/sweetalert.css" rel="stylesheet" />
+<script src="~/Scripts/SweetAlert/sweetalert-dev.min.js"></script>
+
+
+<style>
+    .alph-list__title {
+        font-size: 2.375em;
+        font-weight: 300;
+        position: relative;
+        color: #333;
+        padding: 0 0 0.15789474em;
+    }
+
+        .alph-list__title::before {
+            position: absolute;
+            z-index: 3;
+            bottom: 0;
+            left: 0;
+            width: 1.875rem;
+            height: 3px;
+            content: "";
+            background: #A02337;
+        }
+
+    .alph-list__alph {
+        font-size: 2.63157895em;
+        font-weight: 400;
+        line-height: 1;
+        text-indent: -0.05263158em;
+    }
+
+    .alph-list__title::after {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 2px;
+        content: "";
+        background: #D5D5D5;
+    }
+</style>
 
 <br />
 <div class="form-horizontal" ng-app="app">
     <div ng-controller="NewsManagement as vm">
-        <h4>首頁後台</h4>
-        <hr />
+        <p class="alph-list__title"><span class="alph-list__alph"></span>首頁後台</p><br/>
+        <div>
+            <label class="control-label">Title</label>
+            <div>
+                <input type="text" ng-model="vm.homeSubject" class="form-control" />
+            </div>
+        </div>
+        <div>
+            <label class="control-label">Content</label>
+            <div>
+                <div class="homeContents">@Html.Raw(ViewBag.HomeContents)</div>
+            </div>
+        </div>
+
+        <button class="btn btn-danger" ng-click="vm.save()" type="button">更新</button>
 
     </div>
 </div>
@@ -32,6 +90,42 @@
     var appModule = angular.module('app', []);
     appModule.controller('NewsManagement', ['$scope', '$http', function ($scope, $http) {
         var vm = this;
+        vm.homeSubject = "@ViewBag.Subject";
+        $('.homeContents').summernote({ focus: true });
+
+        vm.save = function () {
+            var markup = $('.homeContents').summernote('code');
+
+            $http({
+
+                method: 'POST',
+                url: "/NewsManagement/SaveHomeInfo",
+                data: { subject: vm.homeSubject, contents: markup},
+                dataType: 'json',
+
+            }).then(function Callback(response) {
+
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+                    swal({
+                        title: "已做更新!!!",
+                        type: "success",
+                    },
+                        function (inputValue) {
+                            if (inputValue === false) {
+                                window.location = response.data.url;
+                            } else {
+                                window.location = response.data.url;
+                            }
+                        });
+                }
+            });
+
+
+        };
+
 
     }]);
 </script>

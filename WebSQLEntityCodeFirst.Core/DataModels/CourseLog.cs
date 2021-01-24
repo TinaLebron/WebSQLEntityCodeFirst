@@ -16,7 +16,7 @@ namespace WebSQLEntityCodeFirst.Core.DataModels
         public string Remarks { get; set; }
         [Required]
         public string Subject { get; set; } //科目
-        public int SubjectNumber { get; set; } //科目代碼
+        public string SubjectNumber { get; set; } //科目代碼
         [Required]
         public int Credits { get; set; } //學分
         public int StartingSchoolYear { get; set; } //開課學年

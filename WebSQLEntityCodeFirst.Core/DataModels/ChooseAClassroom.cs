@@ -14,6 +14,7 @@ namespace WebSQLEntityCodeFirst.Core.DataModels
         public int ID { get; set; }
         public int StartingSchoolYear { get; set; } //開課學年
         public Semester Semester { get; set; } //開課學期
+        public int NumberOfHours { get; set; } //上課時數
         public int? ClassTimeId { get; set; }
         public int? ClassroomId { get; set; }
         public int? CourseId { get; set; }
@@ -27,7 +28,7 @@ namespace WebSQLEntityCodeFirst.Core.DataModels
         public virtual Classroom Classroom { get; set; }
         public virtual Course Course { get; set; } //課程
         public virtual ApplicationUser ApplicationUser { get; set; }
-        public virtual IList<ChooseAClassroomLog> ChooseAClassroomLog { get; set; }
+        //public virtual IList<ChooseAClassroomLog> ChooseAClassroomLog { get; set; }
 
     }
 }
