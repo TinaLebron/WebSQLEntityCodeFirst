@@ -17,146 +17,87 @@
     <link rel="stylesheet" href="~/Content/jquery.dataTables.min.css" />
     <script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="~/Scripts/ui-bootstrap/ui-bootstrap-tpls-2.5.0.min.js"></script>
+    <script src="~/Scripts/SweetAlert/sweetalert.min.js"></script>
+    <link href="~/Content/SweetAlert/sweetalert.css" rel="stylesheet" />
+    <script src="~/Scripts/SweetAlert/sweetalert-dev.min.js"></script>
 }
 
 <style>
-    .portlet.box.blue {
-        border: 1px solid #60aee4;
-        border-top: 0;
+    .panel-primary {
+        border-color: #337ab7 !important;
     }
-
-        .portlet.blue, .portlet.box.blue > .portlet-title, .portlet > .portlet-body.blue {
-            background-color: #3598dc;
-        }
-
-    .portlet.box {
-        padding: 0 !important;
-    }
-
-    .portlet {
-        margin-top: 0;
-        margin-bottom: 25px;
-        padding: 0;
+    .panel {
+        margin-bottom: 8px;
+        background-color: #fff;
+        border: 1px solid transparent;
         border-radius: 4px;
+        -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
     }
 
-        .portlet.box > .portlet-title {
-            border-bottom: 0;
-            padding: 10px;
-            margin-bottom: 0;
-            color: #fff;
-        }
+    .panel-primary > .panel-heading {
+        color: #fff;
+        background-color: #337ab7;
+        border-color: #337ab7;
+    }
 
-        .portlet.box > .portlet-body {
-            background-color: #fff;
-            padding: 15px;
-        }
+    .panel-heading {
+        padding: 10px 15px;
+        border-bottom: 1px solid transparent;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+    }
+    .panel-body {
+        padding: 15px;
+    }
+
+    .form-controlCustom {
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    }
+
+
 </style>
 
 <br />
 <div class="form-horizontal" ng-app="app">
     <div ng-controller="CourseManagement as vm">
-        <h4>選課後台</h4>
-        <hr />
-        <div class="portlet box blue">
-            <div class="portlet-title">
-                <div class="caption">
-                    <i class="fa fa-gift"></i><label style="font-size:18px">查詢條件</label>
-                </div>
-                <div class="tools">
-                    <a href="javascript:;" class="collapse" data-original-title="" title=""></a>
-
+        <div class="panel panel-primary">
+            <div class="panel-heading" style="font-size:18px;font-weight:800;">
+                <img style="width:18px;margin-right:8px" src="../Images/search.png" />
+                &nbsp;選課後台
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-12" style="line-height:35px">
+                    <select ng-model="schoolYear" ng-options=" member for member in schoolYears" class="form-controlCustom "></select>
+                    <select ng-model="semester" ng-options=" member for member in semesters" class="form-controlCustom "></select>
+                    <select ng-model="courseSpecie" ng-options=" member for member in courseSpecies" ng-change="vm.courseSpeciesChange()" class="form-controlCustom"></select>
+                    <select ng-show="courseSpecie === '系所課程'" ng-model="section1" ng-options=" member for member in sections1" ng-change="vm.sectionsChange1()" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '共同課程'" ng-model="section2" ng-options=" member for member in sections2" ng-change="vm.sectionsChange2()" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '系所課程'" ng-model="department1" ng-options=" member for member in departments1" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '共同課程'" ng-model="department2" ng-options=" member for member in departments2" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '系所課程'" ng-model="grade1" ng-options=" member for member in grades1" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '共同課程'" ng-model="grade2" ng-options=" member for member in grades2" class="form-controlCustom "></select>
+                    <select ng-show="courseSpecie === '系所課程'" ng-model="class1" ng-options=" member for member in classes" class="form-controlCustom "></select>
+                    <select ng-model="status" ng-options=" member for member in statuses" class="form-controlCustom "></select>
+                    <button type="button" class="btn btn-primary" ng-click="vm.search()">搜尋</button>
                 </div>
             </div>
-            <div class="portlet-body form">
-                <!-- BEGIN FORM-->
-                <form action="#" class="form-horizontal">
-                    <div class="form-body">
-                        <div class="form-group">
-                            <h4><label class="col-md-2 control-label">開課學年：</label></h4>
-                        </div>
-                        <div>
-                            <div class="form-group">
-                                <label class="col-md-2 control-label">學年</label>
-                                <div class="col-md-10" id="">
-                                    <select ng-model="schoolYear" ng-options=" member for member in schoolYears" class="form-control "></select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-md-2 control-label">學期</label>
-                                <div class="col-md-10" id="">
-                                    <select ng-model="semester" ng-options=" member for member in semesters" class="form-control "></select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <h4><label class="col-md-2 control-label">課程：</label></h4>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">課程類別</label>
-                            <div class="col-md-10" id="">
-                                <select ng-model="courseSpecie" ng-options=" member for member in courseSpecies" ng-change="vm.courseSpeciesChange()" class="form-control"></select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">部別</label>
-                            <div class="col-md-10" id="">
-                                <select ng-show="courseSpecie === '系所課程'" ng-model="section1" ng-options=" member for member in sections1" ng-change="vm.sectionsChange1()" class="form-control "></select>
-                                <select ng-show="courseSpecie === '共同課程'" ng-model="section2" ng-options=" member for member in sections2" ng-change="vm.sectionsChange2()" class="form-control "></select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">科系</label>
-                            <div class="col-md-10" id="">
-                                <select ng-show="courseSpecie === '系所課程'" ng-model="department1" ng-options=" member for member in departments1" class="form-control "></select>
-                                <select ng-show="courseSpecie === '共同課程'" ng-model="department2" ng-options=" member for member in departments2" class="form-control "></select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">年級</label>
-                            <div class="col-md-10" id="">
-                                <select ng-show="courseSpecie === '系所課程'" ng-model="grade1" ng-options=" member for member in grades1" class="form-control "></select>
-                                <select ng-show="courseSpecie === '共同課程'" ng-model="grade2" ng-options=" member for member in grades2" class="form-control "></select>
-                            </div>
-                        </div>
-                        <div ng-show="courseSpecie === '系所課程'" class="form-group">
-                            <label class="col-md-2 control-label">班級</label>
-                            <div class="col-md-10" id="">
-                                <select ng-model="class1" ng-options=" member for member in classes" class="form-control "></select>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="form-group">
-                        <h4><label class="col-md-2 control-label">進度狀態：</label></h4>
-                    </div>
-                    <div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">狀態</label>
-                            <div class="col-md-10" id="">
-                                <select ng-model="status" ng-options=" member for member in statuses" class="form-control "></select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-actions fluid">
-                        <div class="row">
-                            <div class="col-md-offset-3 col-md-9">
-
-                                <button type="button" class="btn btn-primary" ng-click="vm.search()">搜尋</button>
-
-                            </div>
-                        </div>
-                    </div>
-
-                </form>
-            </div>
-            <!-- END FORM-->
-            <!-- Button trigger modal -->
-        </div><a href="" title="新增" ng-click="vm.addCourse()" data-toggle="modal" data-target="#addCourseModal"><img style="width:40px" src="../Images/add.png" /></a><br /><br />
-
+        </div>
+        <a href="" title="新增" ng-click="vm.addCourse()" data-toggle="modal" data-target="#addCourseModal"><img style="width:35px;margin-bottom: 13px;" src="../Images/add.png" /></a>
+       
         <!-- Main content -->
         <section class="content container-fluid">
             <div class="box">
@@ -176,31 +117,31 @@
                             </tr>
                         </thead>
                         @*<tbody>
-                            <tr ng-repeat="courseInQuiryInfo in courseInQuiryInfos">
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.Subject}}</td>
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.SubjectNumber}}</td>
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.Credits}}</td>
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.GradeClass}}</td>
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.RequiredElective}}</td>
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.TimeLocation}}</td>
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.Instructor}}</td>
-                                <td style="font-weight:bold;"><img style="width:40px" src="~/Images/file.png" /></td>
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.MaximumNum}}</td>
-                                <td style="font-weight:bold;">{{courseInQuiryInfo.CurrentNum}}</td>
-                            </tr>
-                        </tbody>*@
-                        <tfoot>
-                            <tr>
-                                <th width="100px">課名<br><span style="font-size:0.9em">Course title</span></th>
-                                <th width="50px">開課碼<br><span style="font-size:0.9em">Course<br>Number</span></th>
-                                <th width="110px">開課學年<br><span style="font-size:0.9em">Class Year</span></th>
-                                <th width="110px">開課系級<br><span style="font-size:0.9em">Grade &amp; Class</span></th>
-                                <th width="60px">教師<br><span style="font-size:0.9em">Instructor</span></th>
-                                <th width="33px">課綱<br><span style="font-size:0.9em">Syllabus</span></th>
-                                <th width="33px">狀態<br><span style="font-size:0.9em">Status</span></th>
-                                <th width="110px"></th>
-                            </tr>
-                        </tfoot>
+                <tr ng-repeat="courseInQuiryInfo in courseInQuiryInfos">
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.Subject}}</td>
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.SubjectNumber}}</td>
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.Credits}}</td>
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.GradeClass}}</td>
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.RequiredElective}}</td>
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.TimeLocation}}</td>
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.Instructor}}</td>
+                    <td style="font-weight:bold;"><img style="width:40px" src="~/Images/file.png" /></td>
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.MaximumNum}}</td>
+                    <td style="font-weight:bold;">{{courseInQuiryInfo.CurrentNum}}</td>
+                </tr>
+            </tbody>
+        <tfoot>
+            <tr>
+                <th width="100px">課名<br><span style="font-size:0.9em">Course title</span></th>
+                <th width="50px">開課碼<br><span style="font-size:0.9em">Course<br>Number</span></th>
+                <th width="110px">開課學年<br><span style="font-size:0.9em">Class Year</span></th>
+                <th width="110px">開課系級<br><span style="font-size:0.9em">Grade &amp; Class</span></th>
+                <th width="60px">教師<br><span style="font-size:0.9em">Instructor</span></th>
+                <th width="33px">課綱<br><span style="font-size:0.9em">Syllabus</span></th>
+                <th width="33px">狀態<br><span style="font-size:0.9em">Status</span></th>
+                <th width="110px"></th>
+            </tr>
+        </tfoot>*@
                     </table>
                 </div>
             </div>
@@ -247,13 +188,13 @@
                                     <div class="form-group">
                                         <label class="col-md-2 control-label">課程名稱</label>
                                         <div class="col-md-10" id="">
-                                            <input type="text" ng-model="vm.addSubject" class="form-control" />
+                                            <input type="text" ng-model="vm.addSubject" class="form-control" autocomplete=off />
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-md-2 control-label">開課碼</label>
                                         <div class="col-md-10" id="">
-                                            <input id="addSubjectNumber" type="text" ng-model="vm.addSubjectNumber" class="form-control" />
+                                            <input id="addSubjectNumber" autocomplete=off type="text" ng-model="vm.addSubjectNumber" class="form-control" />
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -322,7 +263,7 @@
                                     <div class="form-group">
                                         <label class="col-md-2 control-label">授課教師代碼</label>
                                         <div class="col-md-10" id="">
-                                            <input id="addUserName" type="text" ng-model="addUserName" uib-typeahead="member for member in addUserNames | filter:$viewValue | limitTo:8" class="form-control">
+                                            <input id="addUserName" autocomplete=off type="text" ng-model="addUserName" uib-typeahead="member for member in addUserNames | filter:$viewValue | limitTo:8" class="form-control">
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -352,7 +293,7 @@
                                     <div class="form-group">
                                         <label class="col-md-2 control-label">上課地點</label>
                                         <div class="col-md-10" id="">
-                                            <input id="addSchoolNumber" type="text" ng-model="addSchoolNumber" uib-typeahead="member for member in addSchoolNumbers | filter:$viewValue | limitTo:8" class="form-control">
+                                            <input id="addSchoolNumber" autocomplete=off type="text" ng-model="addSchoolNumber" uib-typeahead="member for member in addSchoolNumbers | filter:$viewValue | limitTo:8" class="form-control">
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -420,8 +361,8 @@
                     <div class="modal-footer">
 
                         <div style="text-align: left" id="addError"></div>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" ng-click="vm.addSave()">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" ng-click="vm.addSave()">確定</button>
                     </div>
                 </div>
             </div>
@@ -501,7 +442,7 @@
         $scope.addSchoolNumber = "";
         vm.adderrorInfo = "";
 
-        
+
         function initial() {
             $http({
 
@@ -549,15 +490,15 @@
                                         + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
                                         + '&requiredElective=' + row.RequiredElective
                                         + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
-                                        + ' "><img style="width:40px" src="../Images/file.png" /></a>';
+                                        + ' "><img style="width:35px" src="../Images/file.png" /></a>';
                                 }
                             },
                             { data: "Status" },
                             {
                                 data: "", render: function (data, type, row) {
-                                    return '<a href="/CourseManagement/EditCourse?courseID=' + row.CourseID + '" title="編輯"><img style="width:40px" src="../Images/edit.png" /></a> ' +
-                                        '<a href="/CourseManagement/ElectiveCourse?courseID=' + row.CourseID + '" title="已選課名單"><img style="width:40px" src="../Images/elective.png" /></a> ' +
-                                        '<a href="/CourseManagement/DeleteCourse?courseID=' + row.CourseID + '" title="刪除"><img style="width:40px" src="../Images/delete.png" /></a> ';
+                                    return '<a href="/CourseManagement/EditCourse?courseID=' + row.CourseID + '" title="編輯"><img style="width:35px" src="../Images/edit.png" /></a> ' +
+                                        '<a href="/CourseManagement/ElectiveCourse?courseID=' + row.CourseID + '" title="已選課名單"><img style="width:35px" src="../Images/elective.png" /></a> ' +
+                                        '<a href="/CourseManagement/DeleteCourse?courseID=' + row.CourseID + '" title="刪除"><img style="width:35px" src="../Images/delete.png" /></a> ';
                                 }
                             }
                         ]
@@ -695,15 +636,15 @@
                                             + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
                                             + '&requiredElective=' + row.RequiredElective
                                             + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
-                                            + ' "><img style="width:40px" src="../Images/file.png" /></a>';
+                                            + ' "><img style="width:35px" src="../Images/file.png" /></a>';
                                     }
                                 },
                                 { data: "Status" },
                                 {
                                     data: "", render: function (data, type, row) {
-                                        return '<a href="/CourseManagement/EditCourse?courseID=' + row.CourseID +'" title="編輯"><img style="width:40px" src="../Images/edit.png" /></a> ' +
-                                            '<a href="/CourseManagement/ElectiveCourse?courseID=' + row.CourseID + '" title="已選課名單"><img style="width:40px" src="../Images/elective.png" /></a> ' +
-                                            '<a href="/CourseManagement/DeleteCourse?courseID=' + row.CourseID + '" title="刪除"><img style="width:40px" src="../Images/delete.png" /></a> ';
+                                        return '<a href="/CourseManagement/EditCourse?courseID=' + row.CourseID + '" title="編輯"><img style="width:35px" src="../Images/edit.png" /></a> ' +
+                                            '<a href="/CourseManagement/ElectiveCourse?courseID=' + row.CourseID + '" title="已選課名單"><img style="width:35px" src="../Images/elective.png" /></a> ' +
+                                            '<a href="/CourseManagement/DeleteCourse?courseID=' + row.CourseID + '" title="刪除"><img style="width:35px" src="../Images/delete.png" /></a> ';
                                     }
                                 }
                             ]
@@ -751,15 +692,15 @@
                                             + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
                                             + '&requiredElective=' + row.RequiredElective
                                             + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
-                                            + ' "><img style="width:40px" src="../Images/file.png" /></a>';
+                                            + ' "><img style="width:35px" src="../Images/file.png" /></a>';
                                     }
                                 },
                                 { data: "Status" },
                                 {
                                     data: "", render: function (data, type, row) {
-                                        return '<a href="/CourseManagement/EditCourse?courseID=' + row.CourseID +'" title="編輯"><img style="width:40px" src="../Images/edit.png" /></a> ' +
-                                            '<a href="/CourseManagement/ElectiveCourse?courseID=' + row.CourseID + '" title="已選課名單"><img style="width:40px" src="../Images/elective.png" /></a> ' +
-                                            '<a href="/CourseManagement/DeleteCourse?courseID=' + row.CourseID + '" title="刪除"><img style="width:40px" src="../Images/delete.png" /></a> ';
+                                        return '<a href="/CourseManagement/EditCourse?courseID=' + row.CourseID + '" title="編輯"><img style="width:35px" src="../Images/edit.png" /></a> ' +
+                                            '<a href="/CourseManagement/ElectiveCourse?courseID=' + row.CourseID + '" title="已選課名單"><img style="width:35px" src="../Images/elective.png" /></a> ' +
+                                            '<a href="/CourseManagement/DeleteCourse?courseID=' + row.CourseID + '" title="刪除"><img style="width:35px" src="../Images/delete.png" /></a> ';
                                     }
                                 }
                             ]
@@ -810,7 +751,7 @@
             $scope.isDisabled = 'N';
 
 
-            var mon = new Date().getMonth()+1;
+            var mon = new Date().getMonth() + 1;
             var year = new Date().getFullYear();
 
 
@@ -936,7 +877,7 @@
 
         vm.addSave = function () {
 
-            
+
 
             if (vm.adderrorInfo != "") {
                 document.getElementById(vm.adderrorInfo).style.borderColor = "";
@@ -947,16 +888,15 @@
                 || vm.addSubject == "" || vm.addSubject == undefined || vm.addSubjectNumber == "" || vm.addSubjectNumber == undefined
                 || vm.addCourseDate == undefined || vm.addSignupBeginDate == undefined || vm.addSignupEndDate == undefined
                 || vm.addMinNumber == undefined || vm.addMaxNumber == undefined
-                || $scope.addCourseSort == "" || $scope.addCourseSort == undefined || $scope.addSection1 == "" || $scope.addSection1 == undefined
-                || $scope.addDepartment1 == "" || $scope.addDepartment1 == undefined || $scope.addGrade1 == undefined
+                || $scope.addCourseSort == "" || $scope.addCourseSort == undefined 
                 || $scope.addUserName == "" || $scope.addUserName == undefined
                 || $scope.addRequiredElective == "" || $scope.addRequiredElective == undefined || vm.addCredits == undefined
                 || vm.addNumberOfHours == undefined || vm.addHoursInternship == undefined
-                || $scope.addWeek == "" || $scope.addWeek == undefined  || vm.addFTime == undefined  || vm.addETime == undefined
+                || $scope.addWeek == "" || $scope.addWeek == undefined || vm.addFTime == undefined || vm.addETime == undefined
                 || vm.addObjectives == "" || vm.addObjectives == undefined
                 || vm.addCourseOutline == "" || vm.addCourseOutline == undefined || vm.addTextbooks == "" || vm.addTextbooks == undefined
                 || vm.addReferenceBooks == "" || vm.addReferenceBooks == undefined || vm.addGrading == "" || vm.addGrading == undefined
-                || vm.addSchedule == "" || vm.addSchedule == undefined ) {
+                || vm.addSchedule == "" || vm.addSchedule == undefined) {
                 sweetAlert("輸入請勿為空,請再做確認!!!", '', 'error');
             }
             else if (vm.addCourseDate <= vm.addSignupEndDate) {
@@ -974,15 +914,13 @@
             else if (((vm.addETime - vm.addFTime) + 1) != vm.addNumberOfHours) {
                 sweetAlert("上課時數要跟上課節數數量相同,請再做確認!!!", '', 'error');
             }
-            else
-            {
+            else {
                 if ($scope.isDisabled == 'Y') {
                     return;
                 }
                 $scope.isDisabled = 'Y';
 
-                if ($scope.addCourseSort == "系所課程")
-                {
+                if ($scope.addCourseSort == "系所課程") {
                     $http({
                         method: 'POST',
                         url: "/CourseManagement/SaveAddInfo",
@@ -1046,17 +984,32 @@
                             $scope.addSchoolNumbers = [];
                             $scope.addSchoolNumber = "";
 
+                            //SweetAlert2的寫法
+                            //swal({
+                            //    title: response.data.message,
+                            //    type: 'success',
+                            //})
+                            //    .then((res) => {
+                            //        $("#addCourseModal").modal('hide');
+                            //        window.location.reload();
+                            //    }, function (dismiss) {
+                            //        // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
+                            //        $("#addCourseModal").modal('hide');
+                            //        window.location.reload();
+                            //    });
+
                             swal({
                                 title: response.data.message,
-                                type: 'success',
-                            })
-                                .then((res) => {
-                                    $("#addCourseModal").modal('hide');
-                                    window.location.reload();
-                                }, function (dismiss) {
-                                    // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
-                                    $("#addCourseModal").modal('hide');
-                                    window.location.reload();
+                                type: "success",
+                            },
+                                function (inputValue) {
+                                    if (inputValue === false) {
+                                        $("#addCourseModal").modal('hide');
+                                        window.location.reload();
+                                    } else {
+                                        $("#addCourseModal").modal('hide');
+                                        window.location.reload();
+                                    }
                                 });
 
                         }
@@ -1122,17 +1075,33 @@
                             $scope.addSchoolNumbers = [];
                             $scope.addSchoolNumber = "";
 
+                            //SweetAlert2的寫法
+                            //swal({
+                            //    title: response.data.message,
+                            //    type: 'success',
+                            //})
+                            //    .then((res) => {
+                            //        $("#addCourseModal").modal('hide');
+                            //        window.location.reload();
+                            //    }, function (dismiss) {
+                            //        // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
+                            //        $("#addCourseModal").modal('hide');
+                            //        window.location.reload();
+                            //    });
+
+
                             swal({
                                 title: response.data.message,
-                                type: 'success',
-                            })
-                                .then((res) => {
-                                    $("#addCourseModal").modal('hide');
-                                    window.location.reload();
-                                }, function (dismiss) {
-                                    // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
-                                    $("#addCourseModal").modal('hide');
-                                    window.location.reload();
+                                type: "success",
+                            },
+                                function (inputValue) {
+                                    if (inputValue === false) {
+                                        $("#addCourseModal").modal('hide');
+                                        window.location.reload();
+                                    } else {
+                                        $("#addCourseModal").modal('hide');
+                                        window.location.reload();
+                                    }
                                 });
 
                         }
@@ -1140,10 +1109,10 @@
 
                 }
             }
-           
-            
-            
-            
+
+
+
+
 
 
         }

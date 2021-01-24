@@ -220,8 +220,14 @@ namespace WebSQLEntityCodeFirst.Controllers
                 chooseAClassroomLogDto.ChooseAClassroomId = chooseAClassroomId;
                 db.ChooseAClassroomLog.Add(chooseAClassroomLogDto);
                 db.SaveChanges();
-
                 
+                CourseStatus CourseStatusDto = new CourseStatus();
+                CourseStatusDto.CourseId = courseDtoId;
+                CourseStatusDto.CurrentQuota = 0;
+                db.CourseStatus.Add(CourseStatusDto);
+                db.SaveChanges();
+
+
 
                 return Json(new { message = "新增成功~" });
             }
@@ -463,6 +469,10 @@ namespace WebSQLEntityCodeFirst.Controllers
                 if (editSchoolNumber != "")
                 {
                     courseByEdit.ClassroomId = classroomId;
+                }
+                else
+                {
+                    courseByEdit.ClassroomId = null;
                 }
                 courseByEdit.ApplicationUserId = userId;
                 db.SaveChanges();
@@ -788,6 +798,7 @@ namespace WebSQLEntityCodeFirst.Controllers
                 
 
                 var electiveDelete = db.Elective.FirstOrDefault(x => x.ID == electivesID );
+                var CourseId = electiveDelete.CourseId;
 
                 ElectiveLog electiveLogDto = new ElectiveLog();
                 electiveLogDto.Remarks = remarks + "-取消選課作業(管理員)";
@@ -804,6 +815,11 @@ namespace WebSQLEntityCodeFirst.Controllers
                 db.SaveChanges();
 
                 db.Elective.Remove(electiveDelete);
+                db.SaveChanges();
+
+                var electiveCount = db.Elective.Where(x => x.CourseId == CourseId).Count();
+                var courseStatus = db.CourseStatus.FirstOrDefault(x => x.CourseId == CourseId);
+                courseStatus.CurrentQuota = electiveCount;
                 db.SaveChanges();
 
                 return Json(new { message = StudentLogonId + "已成功取消選課" });
@@ -876,12 +892,25 @@ namespace WebSQLEntityCodeFirst.Controllers
                 var courseMaxNumber = db.Course.FirstOrDefault(x => x.CourseID == courseID).MaxNumber;
                 var courseSubjectNumber = db.Course.FirstOrDefault(x => x.CourseID == courseID).SubjectNumber;
                 string Message = studentsLogonIdOption.Count() + "位學生選課成功~"; ;
-
+                
 
                 foreach (var sl in studentsLogonIdOption)
                 {
                     var student = db.Student.FirstOrDefault(x => x.LogonId == sl);
                     var course = db.Course.FirstOrDefault(x => x.CourseID == courseID);
+
+                    //判斷學生是否超過18學分--------
+                    var Electives = db.Elective.Where(x => x.StartingSchoolYear == course.StartingSchoolYear && x.Semester == course.Semester && x.StudentId == student.ID).ToList();
+                    var CreditsCount = 0;
+                    foreach (var e in Electives)
+                    {
+                        CreditsCount += e.Credits;
+                    }
+                    if (CreditsCount > 18) 
+                    {
+                        throw new Exception(student.LogonId + "的總課程已超過18學分,請在做確認!!!");
+                    }
+                    //--------------------------------
 
                     Elective electiveDto = new Elective();
                     electiveDto.StartingSchoolYear = course.StartingSchoolYear;
@@ -949,10 +978,9 @@ namespace WebSQLEntityCodeFirst.Controllers
 
                     Message = studentsLogonIdOption.Count() + "位學生選課成功,並且系統自動增加" + courseSubjectNumber + "課程上限人數~";
                 }
-                CourseStatus courseStatusDto = new CourseStatus();
-                courseStatusDto.CourseId = courseID;
+
+                var courseStatusDto = db.CourseStatus.FirstOrDefault(x => x.CourseId == courseID);
                 courseStatusDto.CurrentQuota = currentQuotaCount;
-                db.CourseStatus.Add(courseStatusDto);
                 db.SaveChanges();
 
                 

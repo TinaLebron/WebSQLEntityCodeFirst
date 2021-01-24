@@ -36,9 +36,9 @@ namespace WebSQLEntityCodeFirst.EntityFramework.EntityFramework
         public DbSet<Student> Student { get; set; }
         public DbSet<UserState> UserState { get; set; }
         public DbSet<Home> Home { get; set; }
-
         public DbSet<MenuItems> MenuItems { get; set; }
-        
+        public DbSet<CourseTimePerSemester> CourseTimePerSemester { get; set; }
+
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

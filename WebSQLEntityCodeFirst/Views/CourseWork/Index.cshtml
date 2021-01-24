@@ -14,14 +14,145 @@
     //沒使用_ViewStart就要自訂Layout位置
     //Layout = "~/Views/Shared/_UserInfoLayout.cshtml";
 
+    <script type="text/javascript" src="~/Scripts/ui-bootstrap/ui-bootstrap-tpls-2.5.0.min.js"></script>
+    <script src="~/Scripts/SweetAlert/sweetalert.min.js"></script>
+    <link href="~/Content/SweetAlert/sweetalert.css" rel="stylesheet" />
+    <script src="~/Scripts/SweetAlert/sweetalert-dev.min.js"></script>
+    <script src="~/Scripts/SweetAlert/promise.min.js"></script>
 }
 
+<style>
+    .panel-primary {
+        border-color: #337ab7 !important;
+    }
+
+    .panel {
+        margin-bottom: 8px;
+        background-color: #fff;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    }
+
+    .panel-primary > .panel-heading {
+        color: #fff;
+        background-color: #337ab7;
+        border-color: #337ab7;
+    }
+
+    .panel-heading {
+        padding: 10px 15px;
+        border-bottom: 1px solid transparent;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+    }
+
+    .panel-body {
+        padding: 15px;
+    }
+
+    .form-controlCustom {
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    }
+</style>
 
 <br />
 <div class="form-horizontal" ng-app="app">
     <div ng-controller="CourseWork as vm">
-        <h4>選課作業</h4>
-        <hr />
+        <div ng-show="isOpen === 'False'">
+            <h1>暫時不開放</h1>
+        </div>
+        <div ng-show="isOpen === 'True'">
+            <div class="panel panel-primary">
+                <div class="panel-heading" style="font-size:18px;font-weight:800;">
+                    <img style="width:18px;margin-right:8px" src="../Images/search.png" />
+                    &nbsp;選課作業
+                </div>
+                <div class="panel-body">
+                    <div class="col-sm-12" style="line-height:35px">
+                        <input ng-model="courseNumber" class="form-controlCustom " placeholder="搜尋開課碼" />
+                        <button type="button" class="btn btn-primary" ng-click="vm.search1()">搜尋</button>
+                        <select ng-model="courseSpecie" ng-options=" member for member in courseSpecies" ng-change="vm.courseSpeciesChange()" class="form-controlCustom"></select>
+                        <select ng-show="courseSpecie === '系所課程'" ng-model="department1" ng-options=" member for member in departments1" class="form-controlCustom "></select>
+                        <select ng-show="courseSpecie === '共同課程'" ng-model="department2" ng-options=" member for member in departments2" class="form-controlCustom "></select>
+                        <select ng-show="courseSpecie === '系所課程'" ng-model="grade1" ng-options=" member for member in grades1" class="form-controlCustom "></select>
+                        <select ng-show="courseSpecie === '共同課程'" ng-model="grade2" ng-options=" member for member in grades2" class="form-controlCustom "></select>
+                        <select ng-show="courseSpecie === '系所課程'" ng-model="class1" ng-options=" member for member in classes" class="form-controlCustom "></select>
+                        <button type="button" class="btn btn-primary" ng-click="vm.search2()">搜尋</button>
+                    </div>
+                </div>
+            </div>
+            <div class="container" id="coverpage">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <table id="tableblock" class="table">
+                            <caption>課程清單</caption>
+                            <tr>
+                                <td></td>
+                                <td>科目</td>
+                                <td>開課碼</td>
+                                <td>學分</td>
+                                <td>上課時間&地點</td>
+                            </tr>
+                            <tr ng-repeat="courseList in courseLists">
+                                <td><input type="checkbox" id="{{courseList.CourseId}}" value="{{courseList.CourseId}}" ng-model="courseList.IsCourseLists"></td>
+                                <td>{{courseList.Subject}}</td>
+                                <td>{{courseList.SubjectNumber}}</td>
+                                <td>{{courseList.Credits}}</td>
+                                <td>{{courseList.TimeLocation}}</td>
+                            </tr>
+                        </table>
+                        <div id="error1"></div><br /><br />
+                        <button type="button" class="btn btn-default" ng-click="vm.addToCart()">加入購物車</button>
+                    </div>
+                    <div class="col-sm-6">
+                        <table id="tabletxs" class="table">
+                            <caption>我的課程購物車</caption>
+                            <tr>
+                                <td></td>
+                                <td>科目</td>
+                                <td>開課碼</td>
+                                <td>學分</td>
+                                <td>上課時間&地點</td>
+                                <td>狀態</td>
+                            </tr>
+                            <tr ng-repeat="courseListsByCartOk in courseListsByCartOks">
+                                <td><a href="" ng-click="vm.deleteByCartOk(courseListsByCartOk)"><img style="width:23px" src="../Images/delete.png" /></a></td>
+                                <td>{{courseListsByCartOk.Subject}}</td>
+                                <td>{{courseListsByCartOk.SubjectNumber}}</td>
+                                <td>{{courseListsByCartOk.Credits}}</td>
+                                <td>{{courseListsByCartOk.TimeLocation}}</td>
+                                <td><span style="color: green;">{{courseListsByCartOk.Status}}</span></td>
+                            </tr>
+                            <tr ng-repeat="courseListsByCart in courseListsByCarts">
+                                <td><a href="" ng-click="vm.deleteByCart(courseListsByCart)"><img style="width:23px" src="../Images/delete.png" /></a></td>
+                                <td>{{courseListsByCart.Subject}}</td>
+                                <td>{{courseListsByCart.SubjectNumber}}</td>
+                                <td>{{courseListsByCart.Credits}}</td>
+                                <td>{{courseListsByCart.TimeLocation}}</td>
+                                <td><span style="color: red;">{{courseListsByCart.Status}}</span></td>
+                            </tr>
+                        </table>
+                        <div id="error2"></div><br />
+                        <button type="button" class="btn btn-danger" ng-click="vm.courseOk()">確定選課</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 </div>
@@ -32,6 +163,324 @@
     var appModule = angular.module('app', []);
     appModule.controller('CourseWork', ['$scope', '$http', function ($scope, $http) {
         var vm = this;
+
+        $scope.isOpen = "@ViewBag.isOpen";
+        $scope.courseNumber = "";
+        $scope.courseSpecies = ["系所課程", "共同課程"];
+        $scope.courseSpecie = "系所課程";
+        $scope.grades1 = [1, 2, 3, 4];
+        $scope.grade1 = 1;
+        $scope.grades2 = [1, 2, 3, 4];
+        $scope.grade2 = 1;
+        $scope.classes = ["A", "B", "C"];
+        $scope.class1 = "A";
+        $scope.departments1 = [];
+        $scope.department1 = "";
+        $scope.departments2 = [];
+        $scope.department2 = "";
+        $scope.courseLists = {};
+        $scope.courseListsByCarts = {};
+        vm.deleteByCartOkCopy = [];
+
+        function initial() {
+            $http({
+                method: 'POST',
+                url: "/CourseWork/GetCourseList",
+                data: null,
+                dataType: 'json',
+
+            }).then(function Callback(response) {
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+
+                    $scope.departments1 = response.data.sectionDepartmentCores;
+                    $scope.department1 = response.data.sectionDepartmentCore;
+                    $scope.grade1 = response.data.grade1;
+                    $scope.class1 = response.data.class1;
+                    $scope.courseLists = response.data.courseLists;
+                    $scope.courseListsByCartOks = response.data.courseListsByCartOks;
+                    $scope.courseListsByCarts = response.data.courseListsByCarts;
+
+                }
+            });
+        }
+
+        vm.courseSpeciesChange = function () {
+            if ($scope.courseSpecie == "系所課程") {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseWork/GetDepartmentsByUserLogonId",
+                    data: { courseSpecie: $scope.courseSpecie },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        $scope.departments1 = response.data.sectionDepartmentCores;
+                        $scope.department1 = response.data.userDepartment;
+                        $scope.grade1 = response.data.userGrade;
+                        $scope.class1 = response.data.userClass;
+                    }
+                });
+            }
+            else {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseWork/GetDepartmentsByUserLogonId",
+                    data: { courseSpecie: $scope.courseSpecie },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        $scope.departments2 = response.data.sectionDepartmentCores;
+                        $scope.department2 = response.data.sectionDepartmentCores[0];
+                        $scope.grade2 = response.data.userGrade;
+                    }
+                });
+            }
+        }
+
+        //快速查詢
+        vm.search1 = function () {
+            $('#error1').html('');
+            $('#error2').html('');
+            $http({
+
+                method: 'POST',
+                url: "/CourseWork/SubjectNumberSearch",
+                data: { courseNumber: $scope.courseNumber },
+                dataType: 'json',
+
+            }).then(function Callback(response) {
+
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                }
+                else {
+                    $scope.courseLists = response.data.courseLists;
+                }
+            });
+        }
+
+        //課程查詢
+        vm.search2 = function () {
+            $('#error1').html('');
+            $('#error2').html('');
+            if ($scope.courseSpecie == "系所課程") {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseWork/CourseSearch",
+                    data: { courseSpecie: $scope.courseSpecie, department: $scope.department1, grade: $scope.grade1, class1: $scope.class1 },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        $scope.courseLists = response.data.courseLists;
+                    }
+                });
+            }
+            else {
+                $http({
+
+                    method: 'POST',
+                    url: "/CourseWork/CourseSearch",
+                    data: { courseSpecie: $scope.courseSpecie, department: $scope.department2, grade: $scope.grade2, class1: null },
+                    dataType: 'json',
+
+                }).then(function Callback(response) {
+
+                    if (response.data.error == false) {
+                        sweetAlert(response.data.message, '', 'error');
+                    }
+                    else {
+                        $scope.courseLists = response.data.courseLists;
+                    }
+                });
+            }
+
+        }
+
+        vm.addToCart = function () {
+            var courseListsByCartsCopy = [];
+            var courseListsByCartsShopping = []; //courseLists + courseListsByCarts
+            var creditsCount = 0;//總課程不得超過18學分
+
+            //課程清單-不可以選則相同時段的課程
+            for (var i = 0; i < $scope.courseLists.length; i++) {
+                var courseId = $scope.courseLists[i].CourseId;
+                var week = $scope.courseLists[i].Week;
+                var fTime = $scope.courseLists[i].FTime;
+                var eTime = $scope.courseLists[i].ETime;
+                var subjectNumber = $scope.courseLists[i].SubjectNumber;
+
+                if ($scope.courseLists[i].IsCourseLists == true) {
+                    for (var j = 0; j < courseListsByCartsCopy.length; j++) {
+                        var courseIdCart = courseListsByCartsCopy[j].CourseId;
+                        var weekCart = courseListsByCartsCopy[j].Week;
+                        var fTimeCart = courseListsByCartsCopy[j].FTime;
+                        var eTimeCart = courseListsByCartsCopy[j].ETime;
+                        var subjectNumberCart = courseListsByCartsCopy[j].SubjectNumber;
+
+                        if (courseId != courseIdCart && week == weekCart) {
+
+                            for (var k = fTime; k <= eTime; k++) {
+
+                                if (fTimeCart <= k && k <= eTimeCart) {
+                                    sweetAlert(subjectNumberCart + '與' + subjectNumber + '時間衝突', '請選擇其中一個,否則無法繼續', 'error');
+                                    $('#error1').html('<span style="color:red">' + subjectNumberCart + '與' + subjectNumber + '時間衝突,請選擇其中一個,否則無法繼續' + '</span>');
+                                    return;
+                                }
+
+                            }
+                        }
+                    }
+                    courseListsByCartsCopy.push({ ElectiveId: 0, CourseId: $scope.courseLists[i].CourseId, Subject: $scope.courseLists[i].Subject, SubjectNumber: $scope.courseLists[i].SubjectNumber, Credits: $scope.courseLists[i].Credits, TimeLocation: $scope.courseLists[i].TimeLocation, Status: "未確認", Week: $scope.courseLists[i].Week, FTime: $scope.courseLists[i].FTime, ETime: $scope.courseLists[i].ETime });
+
+                }
+            };
+
+            for (var i = 0; i < $scope.courseListsByCartOks.length; i++) {
+                creditsCount += $scope.courseListsByCartOks[i].Credits;
+                courseListsByCartsShopping.push({ ElectiveId: 0, CourseId: $scope.courseListsByCartOks[i].CourseId, Subject: $scope.courseListsByCartOks[i].Subject, SubjectNumber: $scope.courseListsByCartOks[i].SubjectNumber, Credits: $scope.courseListsByCartOks[i].Credits, TimeLocation: $scope.courseListsByCartOks[i].TimeLocation, Status: "未確認", Week: $scope.courseListsByCartOks[i].Week, FTime: $scope.courseListsByCartOks[i].FTime, ETime: $scope.courseListsByCartOks[i].ETime });
+            };
+            for (var i = 0; i < $scope.courseListsByCarts.length; i++) {
+                creditsCount += $scope.courseListsByCarts[i].Credits;
+                courseListsByCartsShopping.push({ ElectiveId: 0, CourseId: $scope.courseListsByCarts[i].CourseId, Subject: $scope.courseListsByCarts[i].Subject, SubjectNumber: $scope.courseListsByCarts[i].SubjectNumber, Credits: $scope.courseListsByCarts[i].Credits, TimeLocation: $scope.courseListsByCarts[i].TimeLocation, Status: "未確認", Week: $scope.courseListsByCarts[i].Week, FTime: $scope.courseListsByCarts[i].FTime, ETime: $scope.courseListsByCarts[i].ETime });
+            };
+            
+            //"課程清單"不可以跟"我的課程購物車"選則相同時段的課程
+            for (var i = 0; i < courseListsByCartsCopy.length; i++) {
+                var isSame = false;
+                var courseId = courseListsByCartsCopy[i].CourseId;
+                var week = courseListsByCartsCopy[i].Week;
+                var fTime = courseListsByCartsCopy[i].FTime;
+                var eTime = courseListsByCartsCopy[i].ETime;
+                var subjectNumber = courseListsByCartsCopy[i].SubjectNumber;
+
+                for (var j = 0; j < courseListsByCartsShopping.length; j++) {
+                    var courseIdOk = courseListsByCartsShopping[j].CourseId;
+                    var weekOk = courseListsByCartsShopping[j].Week;
+                    var fTimeOk = courseListsByCartsShopping[j].FTime;
+                    var eTimeOk = courseListsByCartsShopping[j].ETime;
+                    var subjectNumberOk = courseListsByCartsShopping[j].SubjectNumber;
+                    if (courseId == courseIdOk) {
+                        isSame = true;
+                    }
+                    if (courseId != courseIdOk && week == weekOk) {
+                        for (var k = fTime; k <= eTime; k++) {
+
+                            if (fTimeOk <= k && k <= eTimeOk) {
+                                sweetAlert(subjectNumberOk + '與' + subjectNumber + '時間衝突', '請選擇其中一個,否則無法繼續', 'error');
+                                $('#error1').html('<span style="color:red">' + subjectNumberOk + '與' + subjectNumber + '時間衝突,請選擇其中一個,否則無法繼續' + '</span>');
+                                return;
+                            }
+
+                        }
+                    }
+
+
+                }
+                if (isSame == false) {
+                    creditsCount += courseListsByCartsCopy[i].Credits;
+                }
+
+            }
+            
+            if (creditsCount > 18) {
+                sweetAlert('總課程不得超過18學分!!!', '', 'error');
+                $('#error1').html('<span style="color:red">總課程不得超過18學分!!!</span>');
+                return;
+            }
+
+            $('#error1').html('');
+            for (var i = 0; i < $scope.courseLists.length; i++) {
+                var isSame = false;
+                if ($scope.courseLists[i].IsCourseLists == true) {
+                    for (var j = 0; j < $scope.courseListsByCartOks.length; j++) {
+                        if ($scope.courseListsByCartOks[j].CourseId == $scope.courseLists[i].CourseId) {
+                            isSame = true;
+                        }
+                    }
+                    for (var j = 0; j < $scope.courseListsByCarts.length; j++) {
+                        if ($scope.courseListsByCarts[j].CourseId == $scope.courseLists[i].CourseId) {
+                            isSame = true;
+                        }
+                    }
+                    if (isSame == false) {
+                        $scope.courseListsByCarts.push({ ElectiveId: 0, CourseId: $scope.courseLists[i].CourseId, Subject: $scope.courseLists[i].Subject, SubjectNumber: $scope.courseLists[i].SubjectNumber, Credits: $scope.courseLists[i].Credits, TimeLocation: $scope.courseLists[i].TimeLocation, Status: "未確認", Week: $scope.courseLists[i].Week, FTime: $scope.courseLists[i].FTime, ETime: $scope.courseLists[i].ETime });
+                    }
+
+                }
+
+                $scope.courseLists[i].IsCourseLists = false;
+
+            };
+
+        }
+
+        vm.deleteByCartOk = function (courseListsByCartOk) {
+            vm.deleteByCartOkCopy.push(courseListsByCartOk);
+            $scope.courseListsByCartOks = $scope.courseListsByCartOks.filter(h => h.ElectiveId !== courseListsByCartOk.ElectiveId);
+        }
+
+        vm.deleteByCart = function (courseListsByCart) {
+            $scope.courseListsByCarts = $scope.courseListsByCarts.filter(h => h.CourseId !== courseListsByCart.CourseId);
+        }
+
+        vm.courseOk = function () {
+            
+            $('#error2').html('');
+
+            $http({
+
+                method: 'POST',
+                url: "/CourseWork/SaveCourseSelection",
+                data: { deleteByCartOkCopy: vm.deleteByCartOkCopy, courseListsByCarts: $scope.courseListsByCarts },
+                dataType: 'json',
+
+            }).then(function Callback(response) {
+
+                if (response.data.error == false) {
+                    sweetAlert(response.data.message, '', 'error');
+                    $('#error2').html('<span style="color:red">' + response.data.message + '</span>');
+                }
+                else {
+                    swal({
+                        title: response.data.message,
+                        type: "success",
+                    },
+                        function (inputValue) {
+                            if (inputValue === false) {
+                                window.location = '/CourseWork/Index';
+                            } else {
+                                window.location = '/CourseWork/Index';
+                            }
+                            $('#error2').html('');
+                        });
+                }
+            });
+
+
+
+        }
+
+        initial();
 
     }]);
 </script>

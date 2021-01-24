@@ -32,7 +32,7 @@ namespace WebSQLEntityCodeFirst.Controllers
 
                 NewsServices.UpdateHomeInfo(subject, contents, userId);
 
-                return Json(new { resp = "" });
+                return Json(new { url = Url.Action("Index", "News") });
             }
             catch (Exception ex)
             {

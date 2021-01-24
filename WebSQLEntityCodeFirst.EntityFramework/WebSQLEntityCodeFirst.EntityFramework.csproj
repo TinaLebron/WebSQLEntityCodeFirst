@@ -61,9 +61,9 @@
     <Compile Include="EntityFramework\SchoolContext.cs" />
     <Compile Include="EntityFramework\SeedData\InitialWebSQLEntityCodeFirstDbBuilder.cs" />
     <Compile Include="EntityFramework\SeedData\SchoolInitializer.cs" />
-    <Compile Include="Migrations\202101080713029_InitialMigrations.cs" />
-    <Compile Include="Migrations\202101080713029_InitialMigrations.designer.cs">
-      <DependentUpon>202101080713029_InitialMigrations.cs</DependentUpon>
+    <Compile Include="Migrations\202101131619195_InitialMigrations.cs" />
+    <Compile Include="Migrations\202101131619195_InitialMigrations.designer.cs">
+      <DependentUpon>202101131619195_InitialMigrations.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Program.cs" />
@@ -80,8 +80,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202101080713029_InitialMigrations.resx">
-      <DependentUpon>202101080713029_InitialMigrations.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202101131619195_InitialMigrations.resx">
+      <DependentUpon>202101131619195_InitialMigrations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -137,11 +137,13 @@
     <Compile Include="Controllers\CourseInQuiryController.cs" />
     <Compile Include="Controllers\CourseManagementController.cs" />
     <Compile Include="Controllers\CourseManagementToTeacherController.cs" />
+    <Compile Include="Controllers\CourseTimePerSemesterController.cs" />
     <Compile Include="Controllers\CourseWorkController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MyCourseLlistController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\NewsManagementController.cs" />
+    <Compile Include="Controllers\NotesOnCourseSelectionController.cs" />
     <Compile Include="Controllers\PasswordSettingController.cs" />
     <Compile Include="Controllers\TutorScheduleController.cs" />
     <Compile Include="Controllers\UserInfoController.cs" />
@@ -167,7 +169,10 @@
     <Content Include="Images\edit.png" />
     <Content Include="Images\elective.png" />
     <Content Include="Images\file.png" />
-    <Content Include="Images\school.PNG" />
+    <Content Include="Images\log.png" />
+    <Content Include="Images\school.png" />
+    <Content Include="Images\school1.png" />
+    <Content Include="Images\search.png" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />
     <Content Include="Scripts\angular-aria.js" />
@@ -1112,6 +1117,10 @@
     <Content Include="Scripts\summernote\summernote.min.css" />
     <Content Include="Scripts\summernote\summernote.min.js" />
     <Content Include="Scripts\summernote\summernote.min.js.LICENSE.txt" />
+    <Content Include="Scripts\SweetAlert\promise.min.js" />
+    <Content Include="Scripts\SweetAlert\sweetalert-dev.min.js" />
+    <Content Include="Content\SweetAlert\sweetalert.css" />
+    <Content Include="Scripts\SweetAlert\sweetalert.min.js" />
     <Content Include="Scripts\SweetAlert\sweetalert2.js" />
     <Content Include="Scripts\test-bundles\angular-aria.js" />
     <Content Include="Scripts\test-bundles\angular-cookies.js" />
@@ -1176,6 +1185,15 @@
     <Content Include="Views\CourseManagementToTeacher\_ViewStart.cshtml" />
     <Content Include="Views\CourseManagementToTeacher\Index.cshtml" />
     <Content Include="Views\CourseManagementToTeacher\EditCourse.cshtml" />
+    <Content Include="Views\CourseTimePerSemester\_ViewStart.cshtml" />
+    <Content Include="Views\CourseTimePerSemester\Index.cshtml" />
+    <Content Include="Views\CourseTimePerSemester\EditCourseTime.cshtml" />
+    <Content Include="Views\CourseTimePerSemester\DeleteCourseTime.cshtml" />
+    <Content Include="Views\Shared\_LayoutCourseInfo.cshtml" />
+    <Content Include="Views\NotesOnCourseSelection\_ViewStart.cshtml" />
+    <Content Include="Views\NotesOnCourseSelection\CourseInQuiry.cshtml" />
+    <Content Include="Views\NotesOnCourseSelection\Syllabus.cshtml" />
+    <Content Include="Views\NotesOnCourseSelection\CourseTimeQuiry.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -18,85 +18,79 @@
     <script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="~/Scripts/ui-bootstrap/ui-bootstrap-tpls-2.5.0.min.js"></script>
     <script type="text/javascript" src="~/Scripts/multiselect.min/multiselect.min.js"></script>
+    <script src="~/Scripts/SweetAlert/sweetalert.min.js"></script>
+    <link href="~/Content/SweetAlert/sweetalert.css" rel="stylesheet" />
+    <script src="~/Scripts/SweetAlert/sweetalert-dev.min.js"></script>
 }
 
 <style>
-    .portlet.box.blue {
-        border: 1px solid #60aee4;
-        border-top: 0;
+    .panel-primary {
+        border-color: #337ab7 !important;
     }
 
-        .portlet.blue, .portlet.box.blue > .portlet-title, .portlet > .portlet-body.blue {
-            background-color: #3598dc;
-        }
-
-    .portlet.box {
-        padding: 0 !important;
-    }
-
-    .portlet {
-        margin-top: 0;
-        margin-bottom: 25px;
-        padding: 0;
+    .panel {
+        margin-bottom: 8px;
+        background-color: #fff;
+        border: 1px solid transparent;
         border-radius: 4px;
+        -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
     }
 
-        .portlet.box > .portlet-title {
-            border-bottom: 0;
-            padding: 10px;
-            margin-bottom: 0;
-            color: #fff;
-        }
+    .panel-primary > .panel-heading {
+        color: #fff;
+        background-color: #337ab7;
+        border-color: #337ab7;
+    }
 
-        .portlet.box > .portlet-body {
-            background-color: #fff;
-            padding: 15px;
-        }
+    .panel-heading {
+        padding: 10px 15px;
+        border-bottom: 1px solid transparent;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+    }
+
+    .panel-body {
+        padding: 15px;
+    }
+
+    .form-controlCustom {
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    }
 </style>
 
 <br />
 <div class="form-horizontal" ng-app="app">
     <div ng-controller="ElectiveCourse as vm">
-        <h4>選課清單</h4>
-        <hr />
-        <div class="portlet box blue">
-            <div class="portlet-title">
-                <div class="caption">
-                    <i class="fa fa-gift"></i><label style="font-size:18px">查詢條件</label>
-                </div>
-                <div class="tools">
-                    <a href="javascript:;" class="collapse" data-original-title="" title=""></a>
-
+        <div class="panel panel-primary">
+            <div class="panel-heading" style="font-size:18px;font-weight:800;">
+                <img style="width:18px;margin-right:8px" src="../Images/search.png" />
+                &nbsp;選課清單
+            </div>
+            <div class="panel-body">
+                <div class="col-sm-12" style="line-height:35px">
+                    <input type="text" autocomplete=off ng-model="vm.logonId" class="form-controlCustom" placeholder="搜尋學號" />
+                    <button type="button" class="btn btn-primary" ng-click="vm.search()">搜尋</button>
                 </div>
             </div>
-            <div class="portlet-body form">
-                <!-- BEGIN FORM-->
-                <form action="#" class="form-horizontal">
-                    <div class="form-body">
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">學號</label>
-                            <div class="col-md-10" id="">
-                                <input type="text" ng-model="vm.logonId" class="form-control" />
-                            </div>
-                        </div>
+        </div>
+        <!-- Button trigger modal -->
 
-                    </div>
-
-                    <div class="form-actions fluid">
-                        <div class="row">
-                            <div class="col-md-offset-3 col-md-9">
-
-                                <button type="button" class="btn btn-primary" ng-click="vm.search()">搜尋</button>
-
-                            </div>
-                        </div>
-                    </div>
-
-                </form>
-            </div>
-            <!-- END FORM-->
-            <!-- Button trigger modal -->
-        </div><a href="" title="加入選課" ng-click="vm.addElective()" data-toggle="modal" data-target="#addCourseModal"><img style="width:40px" src="../Images/add.png" /></a><br /><br />
+        <a href="" title="加入選課" ng-click="vm.addElective()" data-toggle="modal" data-target="#addCourseModal"><img style="width:35px" src="../Images/add.png" /></a>
+        <br /><br />
 
         <!-- Main content -->
         <section class="content container-fluid">
@@ -132,11 +126,11 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title" id="editCourseModalLabel">
+                        <h4 class="modal-title" id="addCourseModalLabel">
                             <label class="control-label">加入選課</label>
                         </h4>
 
-                    </div><br/>
+                    </div><br />
                     <div class="row">
                         <div class="col-sm-5">
                             學生未選入清單<br />
@@ -162,13 +156,14 @@
                     </div>
                     <div class="modal-footer">
                         <div style="text-align: left" id="editError"></div>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" ng-click="vm.addSave()">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" ng-click="vm.addSave()">確定</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
 </div>
 
 
@@ -218,7 +213,7 @@
                             { data: "StudentLogonId" },
                             {
                                 data: "", render: function (data, type, row) {
-                                    return '<a href="/CourseManagement/DeleteElectiveCourseList?electivesID=' + row.ElectivesID + ' &studentLogonId=' + row.StudentLogonId + ' &subjectNumber=' + row.SubjectNumber + ' &courseID=' + row.CourseID +'" title="刪除"><img style="width:40px" src="../Images/delete.png" /></a> ';
+                                    return '<a href="/CourseManagement/DeleteElectiveCourseList?electivesID=' + row.ElectivesID + ' &studentLogonId=' + row.StudentLogonId + ' &subjectNumber=' + row.SubjectNumber + ' &courseID=' + row.CourseID +'" title="刪除"><img style="width:35px" src="../Images/delete.png" /></a> ';
                                 }
                             }
                         ]
@@ -260,7 +255,7 @@
                             { data: "StudentLogonId" },
                             {
                                 data: "", render: function (data, type, row) {
-                                    return '<a href="/CourseManagement/DeleteElectiveCourseList?electivesID=' + row.ElectivesID + ' &studentLogonId=' + row.StudentLogonId + ' &subjectNumber=' + row.SubjectNumber + ' &courseID=' + row.CourseID + '" title="刪除"><img style="width:40px" src="../Images/delete.png" /></a> ';
+                                    return '<a href="/CourseManagement/DeleteElectiveCourseList?electivesID=' + row.ElectivesID + ' &studentLogonId=' + row.StudentLogonId + ' &subjectNumber=' + row.SubjectNumber + ' &courseID=' + row.CourseID + '" title="刪除"><img style="width:35px" src="../Images/delete.png" /></a> ';
                                 }
                             }
                         ]
@@ -277,8 +272,8 @@
 
             $('#optgroup').multiselect({
                 search: {
-                    left: '<input type="text" name="q" class="form-control" placeholder="搜尋學號..." />',
-                    right: '<input type="text" name="q" class="form-control" placeholder="搜尋學號..." />',
+                    left: '<input type="text" name="q" class="form-control" autocomplete= off placeholder="搜尋學號..." />',
+                    right: '<input type="text" name="q" class="form-control" autocomplete= off placeholder="搜尋學號..." />',
                 },
                 fireSearch: function (value) {
                     return value.length > 0;
@@ -304,11 +299,11 @@
             });
 
         }
-        
+
 
         vm.addSave = function () {
             var studentsLogonIdOption = [];
-           
+
             $('#optgroup_to optgroup option').each(function () {
                 var optionValue = $(this).val();
                 studentsLogonIdOption.push(optionValue);
@@ -329,20 +324,33 @@
                         sweetAlert(response.data.message, '', 'error');
                     }
                     else {
+                        //SweetAlert2的寫法
+                        //swal({
+                        //    title: response.data.message,
+                        //    type: 'success',
+                        //})
+                        //    .then((res) => {
+                        //        window.location = '/CourseManagement/ElectiveCourse?courseID=' + vm.courseID;
+                        //    }, function (dismiss) {
+                        //        // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
+                        //        window.location = '/CourseManagement/ElectiveCourse?courseID=' + vm.courseID;
+                        //    });
+
                         swal({
                             title: response.data.message,
-                            type: 'success',
-                        })
-                            .then((res) => {
-                                window.location = '/CourseManagement/ElectiveCourse?courseID=' + vm.courseID;
-                            }, function (dismiss) {
-                                // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
-                                window.location = '/CourseManagement/ElectiveCourse?courseID=' + vm.courseID;
+                            type: "success",
+                        },
+                            function (inputValue) {
+                                if (inputValue === false) {
+                                    window.location = '/CourseManagement/ElectiveCourse?courseID=' + vm.courseID;
+                                } else {
+                                    window.location = '/CourseManagement/ElectiveCourse?courseID=' + vm.courseID;
+                                }
                             });
                     }
                 });
             }
-            
+
         }
         //----------------------------------------------------------
 

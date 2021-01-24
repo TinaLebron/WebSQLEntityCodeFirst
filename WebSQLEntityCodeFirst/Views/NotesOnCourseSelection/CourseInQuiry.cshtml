@@ -1,22 +1,10 @@
 ﻿@{
     ViewBag.Title = "CourseInQuiry";
 
-    var account = "";
-    if (Session["sIDNo"] == null || string.IsNullOrWhiteSpace(Session["sIDNo"].ToString()))
-    {
-        Response.Redirect("../Home/Index");
-    }
-    else
-    {
-        account = Session["sIDNo"].ToString();
-    }
 
-    //沒使用_ViewStart就要自訂Layout位置
-    //Layout = "~/Views/Shared/_UserInfoLayout.cshtml";
-    <link rel="stylesheet" href="~/Content/jquery.dataTables.min.css" />
-    <script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
 }
-
+<link rel="stylesheet" href="~/Content/jquery.dataTables.min.css" />
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
 <style>
     .panel-primary {
         border-color: #337ab7 !important;
@@ -64,7 +52,6 @@
         -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
         transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
     }
-
 </style>
 
 
@@ -130,14 +117,14 @@
 
         // options
         $scope.schoolYears = [];
-        $scope.semesters = ["第一學期","第二學期"];
+        $scope.semesters = ["第一學期", "第二學期"];
         $scope.courseSpecies = ["系所課程", "共同課程"];
         $scope.courseSpecie = "系所課程";
-        $scope.grades1 = [1,2,3,4];
+        $scope.grades1 = [1, 2, 3, 4];
         $scope.grade1 = 1;
         $scope.grades2 = [1, 2, 3, 4];
         $scope.grade2 = 1;
-        $scope.classes = ["A","B","C"];
+        $scope.classes = ["A", "B", "C"];
         $scope.class1 = "A";
         $scope.sections1 = [];
         $scope.section1 = "大學部";
@@ -147,14 +134,14 @@
         $scope.department1 = "";
         $scope.departments2 = [];
         $scope.department2 = "";
-        
-        
+
+
         function initial() {
             $http({
 
                 method: 'POST',
                 url: "/CourseInQuiry/GetSectionDepartmentInitial",
-                data: { courseSpecie: $scope.courseSpecie,status: null },
+                data: { courseSpecie: $scope.courseSpecie, status: null },
                 dataType: 'json',
 
             }).then(function Callback(response) {
@@ -195,7 +182,7 @@
                             {
                                 data: "", render: function (data, type, row) {
                                     var yearSemesters = $scope.schoolYear + " " + $scope.semester;
-                                    return '<a target="_blank" href="/CourseInQuiry/Syllabus?yearSemesters=' + yearSemesters + '&courseID=' + row.CourseID
+                                    return '<a target="_blank" href="/NotesOnCourseSelection/Syllabus?yearSemesters=' + yearSemesters + '&courseID=' + row.CourseID
                                         + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
                                         + '&requiredElective=' + row.RequiredElective
                                         + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
@@ -337,7 +324,7 @@
                                 {
                                     data: "", render: function (data, type, row) {
                                         var yearSemesters = $scope.schoolYear + " " + $scope.semester;
-                                        return '<a target="_blank" href="/CourseInQuiry/Syllabus?yearSemesters=' + yearSemesters + '&courseID=' + row.CourseID
+                                        return '<a target="_blank" href="/NotesOnCourseSelection/Syllabus?yearSemesters=' + yearSemesters + '&courseID=' + row.CourseID
                                             + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
                                             + '&requiredElective=' + row.RequiredElective
                                             + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
@@ -367,7 +354,7 @@
                         sweetAlert(response.data.message, '', 'error');
                     }
                     else {
-                       // $scope.courseInQuiryInfos = response.data.courseInQuiryInfos;
+                        // $scope.courseInQuiryInfos = response.data.courseInQuiryInfos;
 
                         $("#myDataTalbe").DataTable({
                             searching: false, //關閉filter功能
@@ -390,7 +377,7 @@
                                 {
                                     data: "", render: function (data, type, row) {
                                         var yearSemesters = $scope.schoolYear + " " + $scope.semester;
-                                        return '<a target="_blank" href="/CourseInQuiry/Syllabus?yearSemesters=' + yearSemesters + '&courseID=' + row.CourseID
+                                        return '<a target="_blank" href="/NotesOnCourseSelection/Syllabus?yearSemesters=' + yearSemesters + '&courseID=' + row.CourseID
                                             + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
                                             + '&requiredElective=' + row.RequiredElective
                                             + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
@@ -407,24 +394,9 @@
             }
         }
 
-        
+
         initial();
 
     }]);
 </script>
-
-
-@*<script type="text/javascript">
-    $(function () {
-
-        $("#myDataTalbe").DataTable({
-            searching: false, //關閉filter功能
-            columnDefs: [{
-                targets: [3],
-                orderable: false,
-            }],
-            destroy: true, //Cannot reinitialise DataTable,解决重新加载表格内容问题
-        });
-    });
-</script>*@
 

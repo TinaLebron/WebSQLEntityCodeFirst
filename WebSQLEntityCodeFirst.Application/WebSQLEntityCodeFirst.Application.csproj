@@ -56,9 +56,13 @@
     <Compile Include="ViewModels\ApplicationUserDto.cs" />
     <Compile Include="ViewModels\CourseDto.cs" />
     <Compile Include="ViewModels\CourseInQuiryInfos.cs" />
+    <Compile Include="ViewModels\CourseListsByCartsByCourseWork.cs" />
+    <Compile Include="ViewModels\CourseListsByCourseWork.cs" />
+    <Compile Include="ViewModels\CourseTimeQuiryDto.cs" />
     <Compile Include="ViewModels\CourseToUserSchedulesDto.cs" />
     <Compile Include="ViewModels\ElectiveCourseListDto.cs" />
     <Compile Include="ViewModels\ElectiveDto.cs" />
+    <Compile Include="ViewModels\GetCourseTimePerSemester.cs" />
     <Compile Include="ViewModels\GetStudentsListToElectiveCourse.cs" />
     <Compile Include="ViewModels\Home.cs" />
     <Compile Include="ViewModels\PermissionsDto.cs" />

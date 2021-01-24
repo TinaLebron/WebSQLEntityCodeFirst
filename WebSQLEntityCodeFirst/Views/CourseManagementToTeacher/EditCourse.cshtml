@@ -17,46 +17,16 @@
     <link rel="stylesheet" href="~/Content/jquery.dataTables.min.css" />
     <script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="~/Scripts/ui-bootstrap/ui-bootstrap-tpls-2.5.0.min.js"></script>
+    <script src="~/Scripts/SweetAlert/sweetalert.min.js"></script>
+    <link href="~/Content/SweetAlert/sweetalert.css" rel="stylesheet" />
+    <script src="~/Scripts/SweetAlert/sweetalert-dev.min.js"></script>
+    <script src="~/Scripts/SweetAlert/promise.min.js"></script>
 }
-
-<style>
-    .portlet.box.blue {
-        border: 1px solid #60aee4;
-        border-top: 0;
-    }
-
-        .portlet.blue, .portlet.box.blue > .portlet-title, .portlet > .portlet-body.blue {
-            background-color: #3598dc;
-        }
-
-    .portlet.box {
-        padding: 0 !important;
-    }
-
-    .portlet {
-        margin-top: 0;
-        margin-bottom: 25px;
-        padding: 0;
-        border-radius: 4px;
-    }
-
-        .portlet.box > .portlet-title {
-            border-bottom: 0;
-            padding: 10px;
-            margin-bottom: 0;
-            color: #fff;
-        }
-
-        .portlet.box > .portlet-body {
-            background-color: #fff;
-            padding: 15px;
-        }
-</style>
 
 <br />
 <div class="form-horizontal" ng-app="app">
     <div ng-controller="EditCourse as vm">
-        
+
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="editCourseModalLabel">
@@ -249,8 +219,8 @@
             <div class="modal-footer">
 
                 <div style="text-align: left" id="editError"></div>
-                <button type="button" class="btn btn-secondary" ng-click="vm.editClose()" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" ng-click="vm.editSave()">Save changes</button>
+                <button type="button" class="btn btn-secondary" ng-click="vm.editClose()" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" ng-click="vm.editSave()">確定</button>
             </div>
         </div>
 
@@ -267,7 +237,7 @@
         $scope.isDisabled = 'N';
         vm.courseID = @ViewBag.courseID;
 
-        
+
         vm.editSchoolYear = @ViewBag.editSchoolYear;
         vm.editSemester = "@ViewBag.editSemester";
         vm.editSubject = "@ViewBag.editSubject";
@@ -290,8 +260,8 @@
         vm.editWeek = "@ViewBag.editWeek";
         vm.editFTime = @ViewBag.editFTime;
         vm.editETime = @ViewBag.editETime;
-        vm.editSchoolNumber = "@ViewBag.editSchoolNumber"; 
-        
+        vm.editSchoolNumber = "@ViewBag.editSchoolNumber";
+
 
         vm.editClose = function () {
 
@@ -299,7 +269,7 @@
         }
 
         vm.editSave = function () {
-            
+
             if ($('#editObjectives').val() == "" || $('#editObjectives').val() == undefined
                 || $('#editCourseOutline').val() == "" || $('#editCourseOutline').val() == undefined || $('#editTextbooks').val() == "" || $('#editTextbooks').val() == undefined
                 || $('#editReferenceBooks').val() == "" || $('#editReferenceBooks').val() == undefined || $('#editGrading').val() == "" || $('#editGrading').val() == undefined
@@ -331,16 +301,28 @@
 
                     }
                     else {
+                        //SweetAlert2的寫法
+                        //swal({
+                        //    title: response.data.message,
+                        //    type: 'success',
+                        //})
+                        //    .then((res) => {
+                        //        window.location = '/CourseManagementToTeacher/Index';
+                        //    }, function (dismiss) {
+                        //        // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
+                        //        window.location = '/CourseManagementToTeacher/Index';
+                        //    });
 
                         swal({
                             title: response.data.message,
-                            type: 'success',
-                        })
-                            .then((res) => {
-                                window.location = '/CourseManagementToTeacher/Index';
-                            }, function (dismiss) {
-                                // dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
-                                window.location = '/CourseManagementToTeacher/Index';
+                            type: "success",
+                        },
+                            function (inputValue) {
+                                if (inputValue === false) {
+                                    window.location = '/CourseManagementToTeacher/Index';
+                                } else {
+                                    window.location = '/CourseManagementToTeacher/Index';
+                                }
                             });
 
                     }

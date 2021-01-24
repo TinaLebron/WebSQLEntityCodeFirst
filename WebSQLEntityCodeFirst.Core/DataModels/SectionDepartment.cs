@@ -22,5 +22,6 @@ namespace WebSQLEntityCodeFirst.Core.DataModels
         public virtual IList<Course> Course { get; set; }
         public virtual IList<CourseLog> CourseLog { get; set; }
         public virtual IList<Student> Student { get; set; }
+        public virtual IList<CourseTimePerSemester> CourseTimePerSemester { get; set; }
     }
 }

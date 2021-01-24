@@ -280,6 +280,27 @@
                 .PrimaryKey(t => t.ID);
             
             CreateTable(
+                "dbo.CourseTimePerSemesters",
+                c => new
+                    {
+                        ID = c.Int(nullable: false, identity: true),
+                        StartingSchoolYear = c.Int(nullable: false),
+                        Semester = c.Int(nullable: false),
+                        Grade = c.Int(nullable: false),
+                        SignupBeginDate = c.DateTime(nullable: false),
+                        SignupEndDate = c.DateTime(nullable: false),
+                        CreatedUserId = c.Int(nullable: false),
+                        CreateDate = c.DateTime(),
+                        LastModifiedUserId = c.Int(nullable: false),
+                        LastModifyDate = c.DateTime(),
+                        Section = c.String(),
+                        SectionDepartment_ID = c.Int(),
+                    })
+                .PrimaryKey(t => t.ID)
+                .ForeignKey("dbo.SectionDepartments", t => t.SectionDepartment_ID)
+                .Index(t => t.SectionDepartment_ID);
+            
+            CreateTable(
                 "dbo.Students",
                 c => new
                     {
@@ -503,6 +524,7 @@
             DropForeignKey("dbo.Electives", "StudentId", "dbo.Students");
             DropForeignKey("dbo.Electives", "CourseId", "dbo.Courses");
             DropForeignKey("dbo.Students", "ApplicationUserId", "dbo.ApplicationUsers");
+            DropForeignKey("dbo.CourseTimePerSemesters", "SectionDepartment_ID", "dbo.SectionDepartments");
             DropForeignKey("dbo.CourseLogs", "SectionDepartmentId", "dbo.SectionDepartments");
             DropForeignKey("dbo.Courses", "SectionDepartmentId", "dbo.SectionDepartments");
             DropForeignKey("dbo.CourseLogs", "CourseDescriptionId", "dbo.CourseDescriptions");
@@ -540,6 +562,7 @@
             DropIndex("dbo.Students", new[] { "UserStateId" });
             DropIndex("dbo.Students", new[] { "SectionDepartmentId" });
             DropIndex("dbo.Students", new[] { "ApplicationUserId" });
+            DropIndex("dbo.CourseTimePerSemesters", new[] { "SectionDepartment_ID" });
             DropIndex("dbo.CourseLogs", new[] { "CourseId" });
             DropIndex("dbo.CourseLogs", new[] { "ApplicationUserId" });
             DropIndex("dbo.CourseLogs", new[] { "ClassroomId" });
@@ -575,6 +598,7 @@
             DropTable("dbo.UserStates");
             DropTable("dbo.Electives");
             DropTable("dbo.Students");
+            DropTable("dbo.CourseTimePerSemesters");
             DropTable("dbo.SectionDepartments");
             DropTable("dbo.CourseLogs");
             DropTable("dbo.CourseDescriptions");

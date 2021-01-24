@@ -17,92 +17,70 @@
 }
 
 <style>
-    .portlet.box.blue {
-        border: 1px solid #60aee4;
-        border-top: 0;
+    .panel-primary {
+        border-color: #337ab7 !important;
     }
 
-        .portlet.blue, .portlet.box.blue > .portlet-title, .portlet > .portlet-body.blue {
-            background-color: #3598dc;
-        }
-
-    .portlet.box {
-        padding: 0 !important;
-    }
-
-    .portlet {
-        margin-top: 0;
-        margin-bottom: 25px;
-        padding: 0;
+    .panel {
+        margin-bottom: 8px;
+        background-color: #fff;
+        border: 1px solid transparent;
         border-radius: 4px;
+        -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
     }
 
-        .portlet.box > .portlet-title {
-            border-bottom: 0;
-            padding: 10px;
-            margin-bottom: 0;
-            color: #fff;
-        }
+    .panel-primary > .panel-heading {
+        color: #fff;
+        background-color: #337ab7;
+        border-color: #337ab7;
+    }
 
-        .portlet.box > .portlet-body {
-            background-color: #fff;
-            padding: 15px;
-        }
+    .panel-heading {
+        padding: 10px 15px;
+        border-bottom: 1px solid transparent;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+    }
+
+    .panel-body {
+        padding: 15px;
+    }
+
+    .form-controlCustom {
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    }
 </style>
 
 <br />
 <div class="form-horizontal" ng-app="app">
     <div ng-controller="TutorSchedule as vm">
-        <h4>導師課表</h4>
-        <hr />
-        <div class="portlet box blue">
-            <div class="portlet-title">
-                <div class="caption">
-                    <i class="fa fa-gift"></i><label style="font-size:18px">查詢條件</label>
-                </div>
-                <div class="tools">
-                    <a href="javascript:;" class="collapse" data-original-title="" title=""></a>
-
-                </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading" style="font-size:18px;font-weight:800;">
+                <img style="width:18px;margin-right:8px" src="../Images/search.png" />
+                &nbsp;導師課表
             </div>
-            <div class="portlet-body form">
-                <!-- BEGIN FORM-->
-                <form action="#" class="form-horizontal">
-                    <div class="form-body">
-                        <div class="form-group">
-                            <h4><label class="col-md-2 control-label">開課學年：</label></h4>
-                        </div>
-                        <div>
-                            <div class="form-group">
-                                <label class="col-md-2 control-label">學年</label>
-                                <div class="col-md-10" id="">
-                                    <select ng-model="schoolYear" ng-options=" member for member in schoolYears" class="form-control "></select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-md-2 control-label">學期</label>
-                                <div class="col-md-10" id="">
-                                    <select ng-model="semester" ng-options=" member for member in semesters" class="form-control "></select>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="form-actions fluid">
-                        <div class="row">
-                            <div class="col-md-offset-3 col-md-9">
-
-                                <button type="button" class="btn btn-primary" ng-click="vm.search()">搜尋</button>
-
-                            </div>
-                        </div>
-                    </div>
-
-                </form>
+            <div class="panel-body">
+                <div class="col-sm-12" style="line-height:35px">
+                    <select ng-model="schoolYear" ng-options=" member for member in schoolYears" class="form-controlCustom "></select>
+                    <select ng-model="semester" ng-options=" member for member in semesters" class="form-controlCustom "></select>
+                    <button type="button" class="btn btn-primary" ng-click="vm.search()">搜尋</button>
+                </div>
             </div>
         </div>
-
         <div class="portlet box green" id="div_searchTable">
             <div class="portlet-title">
 
@@ -112,7 +90,7 @@
                     <div class="clearfix"></div>
                     <div class="form-horizontal">
                         <div class="form-group">
-                           
+
                         </div>
                     </div>
                     <div id="div_tab1" class="">

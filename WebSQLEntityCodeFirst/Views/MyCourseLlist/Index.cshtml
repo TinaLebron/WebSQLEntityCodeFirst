@@ -19,37 +19,53 @@
 
 
 <style>
-    .portlet.box.blue {
-        border: 1px solid #60aee4;
-        border-top: 0;
+    .panel-primary {
+        border-color: #337ab7 !important;
     }
 
-        .portlet.blue, .portlet.box.blue > .portlet-title, .portlet > .portlet-body.blue {
-            background-color: #3598dc;
-        }
-
-    .portlet.box {
-        padding: 0 !important;
-    }
-
-    .portlet {
-        margin-top: 0;
-        margin-bottom: 25px;
-        padding: 0;
+    .panel {
+        margin-bottom: 8px;
+        background-color: #fff;
+        border: 1px solid transparent;
         border-radius: 4px;
+        -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
     }
 
-        .portlet.box > .portlet-title {
-            border-bottom: 0;
-            padding: 10px;
-            margin-bottom: 0;
-            color: #fff;
-        }
+    .panel-primary > .panel-heading {
+        color: #fff;
+        background-color: #337ab7;
+        border-color: #337ab7;
+    }
 
-        .portlet.box > .portlet-body {
-            background-color: #fff;
-            padding: 15px;
-        }
+    .panel-heading {
+        padding: 10px 15px;
+        border-bottom: 1px solid transparent;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+    }
+
+    .panel-body {
+        padding: 15px;
+    }
+
+    .form-controlCustom {
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    }
+
 </style>
 
 
@@ -57,56 +73,19 @@
 <br />
 <div class="form-horizontal" ng-app="app">
     <div ng-controller="MyCourseLlist as vm">
-        <h4>我的選課清單</h4>
-        <hr />
-        <div class="portlet box blue">
-            <div class="portlet-title">
-                <div class="caption">
-                    <i class="fa fa-gift"></i><label style="font-size:18px">查詢條件</label>
-                </div>
-                <div class="tools">
-                    <a href="javascript:;" class="collapse" data-original-title="" title=""></a>
-
-                </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading" style="font-size:18px;font-weight:800;">
+                <img style="width:18px;margin-right:8px" src="../Images/search.png" />
+                &nbsp;我的選課清單
             </div>
-            <div class="portlet-body form">
-                <!-- BEGIN FORM-->
-                <form action="#" class="form-horizontal">
-                    <div class="form-body">
-                        <div class="form-group">
-                            <h4><label class="col-md-2 control-label">開課學年：</label></h4>
-                        </div>
-                        <div>
-                            <div class="form-group">
-                                <label class="col-md-2 control-label">學年</label>
-                                <div class="col-md-10" id="">
-                                    <select ng-model="schoolYear" ng-options=" member for member in schoolYears" class="form-control "></select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-md-2 control-label">學期</label>
-                                <div class="col-md-10" id="">
-                                    <select ng-model="semester" ng-options=" member for member in semesters" class="form-control "></select>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="form-actions fluid">
-                        <div class="row">
-                            <div class="col-md-offset-3 col-md-9">
-
-                                <button type="button" class="btn btn-primary" ng-click="vm.search()">搜尋</button>
-
-                            </div>
-                        </div>
-                    </div>
-
-                </form>
+            <div class="panel-body">
+                <div class="col-sm-12" style="line-height:35px">
+                    <select ng-model="schoolYear" ng-options=" member for member in schoolYears" class="form-controlCustom "></select>
+                    <select ng-model="semester" ng-options=" member for member in semesters" class="form-controlCustom "></select>
+                    <button type="button" class="btn btn-primary" ng-click="vm.search()">搜尋</button>
+                </div>
             </div>
         </div>
-
         <!-- Main content -->
         <section class="content container-fluid">
             <div class="box">
@@ -127,21 +106,6 @@
                                 <th width="33px">目前人數<br><span style="font-size:0.9em">Syllabus</span></th>
                             </tr>
                         </thead>
-                        <tfoot>
-                            <tr>
-                                <th width="100px">課名<br><span style="font-size:0.9em">Course title</span></th>
-                                <th width="50px">開課碼<br><span style="font-size:0.9em">Course<br>Number</span></th>
-                                <th width="35px">學分<br><span style="font-size:0.9em">Credits</span></th>
-                                <th width="110px">開課學年<br><span style="font-size:0.9em">Class Year</span></th>
-                                <th width="110px">開課系級<br><span style="font-size:0.9em">Grade &amp; Class</span></th>
-                                <th width="35px">選必修<br><span style="font-size:0.8em">Required<br>/ Elective</span></th>
-                                <th width="150px">時間地點<br><span style="font-size:0.9em">Time and location</span></th>
-                                <th width="60px">教師<br><span style="font-size:0.9em">Instructor</span></th>
-                                <th width="33px">課綱<br><span style="font-size:0.9em">Syllabus</span></th>
-                                <th width="33px">人數上限<br><span style="font-size:0.9em">Syllabus</span></th>
-                                <th width="33px">目前人數<br><span style="font-size:0.9em">Syllabus</span></th>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -251,7 +215,7 @@
                                         + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
                                         + '&requiredElective=' + row.RequiredElective
                                         + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
-                                        + ' "><img style="width:40px" src="../Images/file.png" /></a>';
+                                        + ' "><img style="width:35px" src="../Images/file.png" /></a>';
                                 }
                             },
                             { data: "MaximumNum" },
@@ -310,7 +274,7 @@
                                         + '&applicationUserId=' + row.ApplicationUserId + '&gradeClass=' + row.GradeClass
                                         + '&requiredElective=' + row.RequiredElective
                                         + '&timeLocation=' + row.TimeLocation + '&maximumNum=' + row.MaximumNum
-                                        + ' "><img style="width:40px" src="../Images/file.png" /></a>';
+                                        + ' "><img style="width:35px" src="../Images/file.png" /></a>';
                                 }
                             },
                             { data: "MaximumNum" },
